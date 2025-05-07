@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFF"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        >
+
+        <Button
+            android:id="@+id/cancel"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="0dp"
+            android:layout_marginTop="5dp"
+            android:background="@android:color/transparent"
+            android:foreground="@drawable/return3"
+            android:gravity="left"
+            android:onClick="Cancel" />
+
+        <ImageView
+            android:id="@+id/titlescan"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_marginTop="2dp"
+            android:layout_weight="5"
+            android:gravity="center"
+            android:src="@drawable/choices1" />
+
+        <Button
+            android:id="@+id/rescan"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_marginTop="2dp"
+            android:layout_marginRight="0dp"
+            android:background="@android:color/transparent"
+            android:foreground="@drawable/rescan3"
+            android:gravity="right"
+            android:onClick="Rescan" />
+
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

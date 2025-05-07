@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/Main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/appfinal__2__3197_"
+    android:visibility="visible"
+    tools:context=".com.MainActivity"
+    tools:ignore="ExtraText"
+    android:fitsSystemWindows="false">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="#FFF"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/BatteryNo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:alpha="1"
+        android:text="@string/BatteryNo"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="#000"
+        android:textSize="20dp"
+
+        app:drawableTint="#000000"
+        app:layout_constraintBottom_toBottomOf="@+id/toolbar2"
+        app:layout_constraintEnd_toStartOf="@+id/unlink"
+        app:layout_constraintStart_toEndOf="@+id/link"
+        app:layout_constraintTop_toTopOf="@+id/toolbar2" />
+
+    <Button
+        android:id="@+id/link"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="10dp"
+        android:foreground="@drawable/link_icon"
+        android:foregroundGravity="center|fill"
+        android:onClick="Link"
+        android:text="@string/Link"
+        app:layout_constraintBottom_toBottomOf="@+id/toolbar2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/unlink"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginRight="10dp"
+        android:foreground="@drawable/unlink_icon"
+        android:foregroundGravity="center|fill"
+        android:onClick="UnLink"
+        android:text="@string/UnLink"
+        app:layout_constraintBottom_toBottomOf="@+id/toolbar2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="5dp"
+
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar2" />
+
+    <TextView
+        android:id="@+id/Percentage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Percent"
+        android:textColor="#000"
+        android:textSize="20sp"
+        app:drawableTint="#040303"
+        app:layout_constraintBottom_toBottomOf="@+id/view"
+        app:layout_constraintEnd_toEndOf="@+id/view"
+        app:layout_constraintStart_toStartOf="@+id/view"
+        app:layout_constraintTop_toTopOf="@+id/view" />
+
+    <TextView
+        android:id="@+id/Current"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:text="@string/Amps"
+        android:textColor="#000"
+        android:textSize="15sp"
+        app:layout_constraintEnd_toEndOf="@+id/CircleCurrent"
+        app:layout_constraintStart_toStartOf="@+id/CircleCurrent"
+        app:layout_constraintTop_toTopOf="@+id/CircleCurrent" />
+
+    <TextView
+        android:id="@+id/Voltage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:text="@string/Volt"
+        android:textColor="#000"
+        android:textSize="15sp"
+        app:layout_constraintEnd_toEndOf="@+id/CircleVoltage"
+        app:layout_constraintStart_toStartOf="@+id/CircleVoltage"
+        app:layout_constraintTop_toTopOf="@+id/CircleVoltage" />
+
+    <TextView
+        android:id="@+id/Temperature"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:text="@string/Temp"
+        android:textColor="#000"
+        android:textSize="15sp"
+        app:layout_constraintEnd_toEndOf="@+id/circleTemp"
+        app:layout_constraintStart_toStartOf="@+id/circleTemp"
+        app:layout_constraintTop_toTopOf="@+id/circleTemp" />
+
+    <TextView
+        android:id="@+id/Time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:text="@string/Time"
+        android:textColor="#000"
+        android:textSize="15sp"
+        app:layout_constraintEnd_toEndOf="@+id/circleTime"
+        app:layout_constraintStart_toStartOf="@+id/circleTime"
+        app:layout_constraintTop_toTopOf="@+id/circleTime" />
+
+
+    <ImageView
+        android:id="@+id/LogoER"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_marginBottom="25dp"
+        android:alpha="0.8"
+        android:src="@drawable/logo_er_smal"
+        android:foregroundGravity="center|fill"
+        android:scaleType="centerInside"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+    <ImageView
+        android:id="@+id/CircleCurrent"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_marginTop="-25dp"
+        android:alpha="1"
+        android:focusable="auto"
+        android:focusableInTouchMode="true"
+        android:src="@drawable/pngegg1"
+        android:contentDescription="@string/desc_circle_current"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/view" />
+
+
+    <ImageView
+        android:id="@+id/CircleVoltage"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="-15dp"
+        android:alpha="1"
+        android:focusable="auto"
+        android:focusableInTouchMode="true"
+        android:src="@drawable/pngegg1"
+        android:scaleType="fitXY"
+        android:contentDescription="@string/desc_circle_voltage"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/CircleCurrent" />
+
+    <ImageView
+        android:id="@+id/circleTemp"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_marginTop="-15dp"
+        android:layout_marginEnd="50dp"
+        android:alpha="1"
+        android:focusable="auto"
+        android:focusableInTouchMode="true"
+        android:src="@drawable/pngegg1"
+        android:contentDescription="@string/desc_circle_temp"
+        android:scaleType="fitXY"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/circleTime" />
+
+    <ImageView
+        android:id="@+id/circleTime"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_marginTop="-25dp"
+        android:alpha="1"
+        android:focusable="auto"
+        android:focusableInTouchMode="true"
+        android:src="@drawable/pngegg1"
+        android:foregroundGravity="fill"
+        android:scaleType="fitXY"
+        android:contentDescription="@string/desc_circle_time"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/view" />
+
+    <ImageView
+        android:id="@+id/imageView5"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="30dp"
+        android:alpha="1"
+        android:src="@drawable/dc_voltage"
+        app:layout_constraintBottom_toBottomOf="@+id/CircleCurrent"
+        app:layout_constraintEnd_toEndOf="@+id/CircleCurrent"
+        app:layout_constraintHorizontal_bias="0.52"
+        app:layout_constraintStart_toStartOf="@+id/CircleCurrent"
+        app:layout_constraintTop_toBottomOf="@+id/Current" />
+
+    <ImageView
+        android:id="@+id/imageView6"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="20dp"
+        android:alpha="1"
+        android:src="@drawable/power_10"
+        app:layout_constraintEnd_toEndOf="@+id/CircleVoltage"
+        app:layout_constraintHorizontal_bias="0.52"
+        app:layout_constraintStart_toStartOf="@+id/CircleVoltage"
+        app:layout_constraintTop_toBottomOf="@+id/Voltage" />
+
+    <ImageView
+        android:id="@+id/imageView8"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="20dp"
+        android:alpha="1"
+        android:src="@drawable/time_12"
+        app:layout_constraintEnd_toEndOf="@+id/circleTime"
+        app:layout_constraintHorizontal_bias="0.52"
+        app:layout_constraintStart_toStartOf="@+id/circleTime"
+        app:layout_constraintTop_toBottomOf="@+id/Time" />
+
+    <ImageView
+        android:id="@+id/imageView7"
+        android:layout_width="20dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="20dp"
+        android:alpha="1"
+        android:src="@drawable/temp"
+        app:layout_constraintEnd_toEndOf="@+id/circleTemp"
+        app:layout_constraintHorizontal_bias="0.52"
+        app:layout_constraintStart_toStartOf="@+id/circleTemp"
+        app:layout_constraintTop_toBottomOf="@+id/Temperature" />
+
+    <Button
+        android:id="@+id/Refresh"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="8dp"
+        android:background="@android:color/transparent"
+        android:foreground="@drawable/refresh_icon1"
+        android:onClick="Refresh"
+        android:text="@string/Refresh"
+        android:textColor="?android:attr/panelBackground"
+        app:layout_constraintEnd_toStartOf="@+id/view"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar2" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="@style/CustomProgressBarHorizontal"
+        android:layout_width="150dp"
+        android:layout_height="80dp"
+        android:alpha="0.5"
+        android:onClick="open_Dialog_Cells"
+        app:layout_constraintBottom_toBottomOf="@+id/view"
+        app:layout_constraintEnd_toEndOf="@+id/view"
+        app:layout_constraintStart_toStartOf="@+id/view"
+        app:layout_constraintTop_toTopOf="@+id/view"
+        app:layout_constraintVertical_bias="0.485" />
+
+    <ProgressBar
+        android:id="@+id/Batt1"
+        style="@style/CustomProgressBarHorizontal"
+        android:layout_width="15dp"
+        android:layout_height="20dp"
+        android:alpha="0.5"
+        app:layout_constraintBottom_toBottomOf="@+id/progressBar"
+        app:layout_constraintStart_toEndOf="@+id/view"
+        app:layout_constraintTop_toTopOf="@+id/progressBar" />
+
+
+    <ImageButton
+        android:id="@+id/Lockbut"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@android:color/transparent"
+        android:foregroundGravity="fill"
+        android:hapticFeedbackEnabled="false"
+        android:onClick="Lock"
+        android:scaleType="fitCenter"
+        android:src="@drawable/lock_11"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/Error"
+        app:layout_constraintEnd_toStartOf="@+id/CurrentProt"
+        app:layout_constraintStart_toEndOf="@+id/Pack"
+        app:layout_constraintTop_toBottomOf="@+id/progressBar" />
+
+    <TextView
+        android:id="@+id/Error"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:background="@drawable/red_circle_with_transparent_background_17"
+        android:gravity="center"
+        android:onClick="Inform_Warning"
+        android:text="SC"
+        android:textColor="@color/design_default_color_on_secondary"
+        app:layout_constraintBottom_toBottomOf="@+id/CircleVoltage"
+        app:layout_constraintEnd_toStartOf="@+id/circleTemp"
+        app:layout_constraintStart_toEndOf="@+id/CircleVoltage"
+        app:layout_constraintTop_toBottomOf="@+id/view" />
+
+    <TextView
+        android:id="@+id/Pack"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:background="@drawable/red_circle_with_transparent_background_17"
+        android:gravity="center"
+        android:onClick="Inform_Warning"
+        android:text="PUV"
+        android:textAlignment="center"
+        android:textColor="@color/design_default_color_on_secondary"
+        app:layout_constraintBottom_toTopOf="@+id/Error"
+        app:layout_constraintEnd_toStartOf="@+id/Error"
+        app:layout_constraintHorizontal_bias="0.558"
+        app:layout_constraintStart_toEndOf="@+id/CircleCurrent"
+        app:layout_constraintTop_toBottomOf="@+id/view" />
+
+    <TextView
+        android:id="@+id/CurrentProt"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:background="@drawable/red_circle_with_transparent_background_17"
+        android:gravity="center"
+        android:onClick="Inform_Warning"
+        android:text="CO"
+        android:textColor="@color/design_default_color_on_secondary"
+        app:layout_constraintBottom_toTopOf="@+id/Error"
+        app:layout_constraintEnd_toStartOf="@+id/circleTime"
+        app:layout_constraintStart_toEndOf="@+id/Error"
+        app:layout_constraintTop_toBottomOf="@+id/view" />
+
+    <TextView
+        android:id="@+id/TempProtect"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:background="@drawable/red_circle_with_transparent_background_17"
+        android:gravity="center"
+        android:onClick="Inform_Warning"
+        android:text="PUV"
+        android:textColor="@color/design_default_color_on_secondary"
+        app:layout_constraintBottom_toTopOf="@+id/circleTime"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/Error"
+        app:layout_constraintTop_toBottomOf="@+id/progressBar" />
+
+    <!--TextView
+        android:id="@+id/Single"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:background="@drawable/red_circle_with_transparent_background_17"
+        android:gravity="center"
+        android:onClick="Inform_Warning"
+        android:text="SUV"
+        android:textColor="@color/design_default_color_on_secondary"
+        app:layout_constraintBottom_toTopOf="@+id/CircleCurrent"
+        app:layout_constraintEnd_toStartOf="@+id/Error"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/progressBar" -->
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

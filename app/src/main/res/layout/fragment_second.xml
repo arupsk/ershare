@@ -1,0 +1,89 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.Andriod.ER.com.SecondFragment">
+
+    <!--TextView and Button displayed in Second Fragment -->
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
+        <Button
+            android:id="@+id/Refresh_second"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Button" />
+
+        <ImageButton
+            android:id="@+id/LockbutCal"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="25dp"
+            android:background="@android:color/transparent"
+            android:foregroundGravity="fill"
+            android:hapticFeedbackEnabled="false"
+            android:onClick="LockCalFunc"
+            android:scaleType="fitCenter"
+            android:src="@drawable/lock_11"
+            android:visibility="visible" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:orientation="horizontal">
+
+            <Switch
+                android:id="@+id/switchTemp1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="25dp"
+                android:onClick="Temp1"
+                android:text="Temp1"
+                android:visibility="visible" />
+
+            <Switch
+                android:id="@+id/switchTemp2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="Temp2"
+                android:text="Temp2"
+                android:visibility="visible" />
+
+            <Switch
+                android:id="@+id/switchTemp3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="25dp"
+                android:onClick="Temp3"
+                android:text="Temp3"
+                android:visibility="visible" />
+
+
+        </LinearLayout>
+
+        <CheckBox
+            android:id="@+id/ChMosFit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:background="@color/ic_launcher_background"
+            android:text="ChargeSwitch "/>
+
+        <CheckBox
+            android:id="@+id/DisMosfit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@color/ic_launcher_background"
+            android:text="DischageSwitch "/>
+
+
+
+
+    </LinearLayout>
+</RelativeLayout>

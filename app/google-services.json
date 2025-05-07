@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "774641438993",
+    "project_id": "energy-research-cdeef",
+    "storage_bucket": "energy-research-cdeef.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:774641438993:android:7d44de2da5c24f28c7fcb0",
+        "android_client_info": {
+          "package_name": "com.Andriod.ER"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "774641438993-jfra5uv70hcuctc5026fsm30ubnbqddl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBJSuBNY8XYMM3K1BYhg6-CPSFFPxssRXA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "774641438993-jfra5uv70hcuctc5026fsm30ubnbqddl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="t12t">
+        <item>Cel 1</item>
+        <item>Cel 2</item>
+        <item>Cel 3</item>
+        <item>Cel 4</item>
+        <item>All  </item>
+    </string-array>
+    <string-array name="t24t">
+        <item>Cel 1</item>
+        <item>Cel 2</item>
+        <item>Cel 3</item>
+        <item>Cel 4</item>
+        <item>Cel 5</item>
+        <item>Cel 6</item>
+        <item>Cel 7</item>
+        <item>Cel 8</item>
+        <item>All  </item>
+    </string-array>
+
+    <string-array name="t36t">
+        <item>Cel 1</item>
+        <item>Cel 2</item>
+        <item>Cel 3</item>
+        <item>Cel 4</item>
+        <item>Cel 5</item>
+        <item>Cel 6</item>
+        <item>Cel 7</item>
+        <item>Cel 8</item>
+        <item>Cel 9</item>
+        <item>Cel 10</item>
+        <item>Cel 11</item>
+        <item>Cel 12</item>
+        <item>All  </item>
+    </string-array>
+
+    <string-array name="t48t">
+        <item>Cel 1</item>
+        <item>Cel 2</item>
+        <item>Cel 3</item>
+        <item>Cel 4</item>
+        <item>Cel 5</item>
+        <item>Cel 6</item>
+        <item>Cel 7</item>
+        <item>Cel 8</item>
+        <item>Cel 9</item>
+        <item>Cel 10</item>
+        <item>Cel 11</item>
+        <item>Cel 12</item>
+        <item>Cel 13</item>
+        <item>Cel 14</item>
+        <item>Cel 15</item>
+        <item>Cel 16</item>
+        <item>All  </item>
+    </string-array>
+
+</resources>

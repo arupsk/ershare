@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+
+<!--        <item-->
+<!--            android:id="@+id/mainActivity"-->
+<!--            android:title="Home" />-->
+        <item
+            android:id="@+id/add_battery_menu"
+            android:title="" />
+        <item
+            android:id="@+id/batteriesList"
+            android:title="" />
+        <item
+            android:id="@+id/Protaction_state"
+            android:title="Protection state" />
+
+        <item
+            android:id="@+id/languages"
+            android:title="" />
+        <item
+            android:id="@+id/changePassword"
+            android:title="Change Password" />
+
+        <item
+            android:id="@+id/logout"
+            android:title="" />
+    </group>
+
+
+
+</menu>

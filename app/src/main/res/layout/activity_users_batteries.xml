@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#EEE"
+
+    tools:context=".com.UsersBatteries">
+    <ImageView
+        android:id="@+id/backBtn"
+        android:src="@drawable/back_arrow"
+        android:layout_width="wrap_content"
+        android:padding="8dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/black">
+
+    </ImageView>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/batteriessRecyclerView"
+        android:layout_width="match_parent"
+        android:visibility="gone"
+        android:layout_height="match_parent" />
+    <TextView
+        android:id="@+id/noresult"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:textSize="22sp"
+        android:visibility="gone"
+        android:textColor="@color/black"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="No Result Found"/>
+
+</LinearLayout>

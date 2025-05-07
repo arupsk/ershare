@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/backback"
+    android:visibility="visible"
+    tools:context=".com.Calibration"
+    tools:ignore="ExtraText"
+    tools:visibility="visible">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar2Cal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="#FFF"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/BatteryNoCal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:alpha="1"
+        android:text="@string/BatteryNo"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="#000"
+        android:textSize="20dp"
+
+        app:drawableTint="#000000"
+        app:layout_constraintBottom_toBottomOf="@+id/toolbar2Cal"
+        app:layout_constraintEnd_toStartOf="@+id/unlinkCal"
+        app:layout_constraintStart_toEndOf="@+id/linkCal"
+        app:layout_constraintTop_toTopOf="@+id/toolbar2Cal" />
+
+    <Button
+        android:id="@+id/linkCal"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="10dp"
+        android:foreground="@drawable/link_icon"
+        android:foregroundGravity="center|fill"
+        android:onClick="Link"
+        android:text="@string/Link"
+        app:layout_constraintBottom_toBottomOf="@+id/toolbar2Cal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/unlinkCal"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginRight="10dp"
+        android:foreground="@drawable/unlink_icon"
+        android:foregroundGravity="center|fill"
+        android:onClick="UnLink"
+        android:text="@string/UnLink"
+        app:layout_constraintBottom_toBottomOf="@+id/toolbar2Cal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+
+
+
+
+
+
+
+
+    <ImageButton
+        android:id="@+id/buttonGetCal"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="25dp"
+        android:background="@android:color/transparent"
+        android:onClick="RefreshCal"
+        android:scaleType="fitCenter"
+        android:src="@drawable/refresh_icon1"
+        android:text="Button"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/switchTemp1"
+        app:layout_constraintEnd_toStartOf="@+id/LockbutCal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linkCal" />
+
+    <Button
+        android:id="@+id/button_48V"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="Cal_48V_100Ah"
+        android:text="48V100Ah(3353)"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_36V"
+        app:layout_constraintVertical_bias="0.16000003" />
+
+    <Button
+        android:id="@+id/button_36V"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="Cal_36V_100Ah"
+        android:text="36V100Ah(3346)"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar2Cal" />
+
+    <Button
+        android:id="@+id/button_24V"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="Cal_24V_100Ah"
+        android:text="24V100Ah(3339)"
+        app:layout_constraintBottom_toTopOf="@+id/button_36V"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar2Cal"
+        app:layout_constraintVertical_bias="0.84000003" />
+
+
+    <TextView
+        android:id="@+id/Percentagecal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Percent"
+        android:textColor="#000"
+        android:textSize="20sp"
+        app:drawableTint="#040303"
+        app:layout_constraintBottom_toTopOf="@+id/button_24V"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar2Cal" />
+
+    <TextView
+        android:id="@+id/Currentcal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Amps"
+        android:textColor="#000"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toTopOf="@+id/button_24V"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/Percentagecal"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar2Cal" />
+
+    <TextView
+        android:id="@+id/Voltagecal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Volt"
+        android:textColor="#000"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toTopOf="@+id/button_24V"
+        app:layout_constraintEnd_toStartOf="@+id/Percentagecal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar2Cal" />
+
+    <LinearLayout
+        android:layout_width="409dp"
+        android:layout_height="220dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_48V">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+            android:id="@+id/cel1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="cel1"
+            android:textColor="#000"
+            android:textSize="15sp"/>
+
+            <TextView
+                android:id="@+id/cel2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="cel2"
+                android:textColor="#000"
+                android:textSize="15sp"/>
+            <TextView
+                android:id="@+id/cel3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="cel3"
+                android:textColor="#000"
+                android:textSize="15sp"/>
+            <TextView
+                android:id="@+id/cel4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="cel4"
+                android:textColor="#000"
+                android:textSize="15sp"/>
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

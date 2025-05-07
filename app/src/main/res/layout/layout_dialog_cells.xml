@@ -1,0 +1,652 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@drawable/appfinal__2__3197_"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+        <LinearLayout
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:orientation="horizontal">
+
+
+            <FrameLayout
+                android:id="@+id/F1"
+                android:layout_width="77dp"
+                android:layout_gravity="right"
+                android:layout_height="wrap_content">
+
+                <ProgressBar
+                    android:id="@+id/P_Cel1"
+                    style="@style/CustomProgressBarHorizontal"
+                    android:layout_width="70dp"
+                    android:layout_height="40dp"
+                    android:alpha="0.5" />
+                <ProgressBar
+                    android:id="@+id/Battt1"
+                    style="@style/CustomProgressBarHorizontal"
+                    android:layout_width="7dp"
+                    android:layout_height="20dp"
+                    android:layout_marginLeft="70dp"
+                    android:alpha="0.5"
+                    android:layout_gravity="center_vertical"/>
+
+                    <TextView
+                        android:id="@+id/cel1"
+                        android:layout_gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="TextView"
+                        android:textColor="@color/design_default_color_on_secondary" />
+            </FrameLayout>
+
+
+            <FrameLayout
+                android:id="@+id/F2"
+                android:layout_width="77dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginRight="35dp"
+                android:layout_marginLeft="35dp"
+                android:layout_height="wrap_content">
+
+                <ProgressBar
+                    android:id="@+id/P_Cel2"
+                    style="@style/CustomProgressBarHorizontal"
+                    android:layout_width="70dp"
+                    android:layout_height="40dp"
+                    android:alpha="0.5" />
+                <ProgressBar
+                    android:id="@+id/Battt2"
+                    style="@style/CustomProgressBarHorizontal"
+                    android:layout_width="7dp"
+                    android:layout_height="20dp"
+                    android:layout_marginLeft="70dp"
+                    android:alpha="0.5"
+                    android:layout_gravity="center_vertical"/>
+
+                <TextView
+                    android:id="@+id/cel2"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="TextView"
+                    android:textColor="@color/design_default_color_on_secondary" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/F3"
+                android:layout_gravity="left"
+                android:layout_width="77dp"
+                android:layout_height="wrap_content">
+
+                <ProgressBar
+                    android:id="@+id/P_Cel3"
+                    style="@style/CustomProgressBarHorizontal"
+                    android:layout_width="70dp"
+                    android:layout_height="40dp"
+                    android:alpha="0.5" />
+                <ProgressBar
+                    android:id="@+id/Battt3"
+                    style="@style/CustomProgressBarHorizontal"
+                    android:layout_width="7dp"
+                    android:layout_height="20dp"
+                    android:layout_marginLeft="70dp"
+                    android:alpha="0.5"
+                    android:layout_gravity="center_vertical"/>
+
+                <TextView
+                    android:id="@+id/cel3"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="TextView"
+                    android:textColor="@color/design_default_color_on_secondary" />
+            </FrameLayout>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:orientation="horizontal">
+            <FrameLayout
+                android:id="@+id/F4"
+                android:layout_width="77dp"
+                android:layout_height="wrap_content">
+
+                <ProgressBar
+                    android:id="@+id/P_Cel4"
+                    style="@style/CustomProgressBarHorizontal"
+                    android:layout_width="70dp"
+                    android:layout_height="40dp"
+                    android:alpha="0.5" />
+                <ProgressBar
+                    android:id="@+id/Battt4"
+                    style="@style/CustomProgressBarHorizontal"
+                    android:layout_width="7dp"
+                    android:layout_height="20dp"
+                    android:layout_marginLeft="70dp"
+                    android:alpha="0.5"
+                    android:layout_gravity="center_vertical"/>
+
+                <TextView
+                    android:id="@+id/cel4"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="TextView"
+                    android:textColor="@color/design_default_color_on_secondary" />
+            </FrameLayout>
+
+
+            <FrameLayout
+                android:id="@+id/F5"
+                android:layout_width="77dp"
+                android:layout_marginRight="35dp"
+                android:layout_marginLeft="35dp"
+                android:layout_height="wrap_content">
+
+                <ProgressBar
+                    android:id="@+id/P_Cel5"
+                    style="@style/CustomProgressBarHorizontal"
+                    android:layout_width="70dp"
+                    android:layout_height="40dp"
+                    android:alpha="0.5" />
+                <ProgressBar
+                    android:id="@+id/Battt5"
+                    style="@style/CustomProgressBarHorizontal"
+                    android:layout_width="7dp"
+                    android:layout_height="20dp"
+                    android:layout_marginLeft="70dp"
+                    android:alpha="0.5"
+                    android:layout_gravity="center_vertical"/>
+
+                <TextView
+                    android:id="@+id/cel5"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="TextView"
+                    android:textColor="@color/design_default_color_on_secondary" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/F6"
+                android:layout_width="77dp"
+                android:layout_height="wrap_content">
+
+                <ProgressBar
+                    android:id="@+id/P_Cel6"
+                    style="@style/CustomProgressBarHorizontal"
+                    android:layout_width="70dp"
+                    android:layout_height="40dp"
+                    android:alpha="0.5" />
+                <ProgressBar
+                    android:id="@+id/Battt6"
+                    style="@style/CustomProgressBarHorizontal"
+                    android:layout_width="7dp"
+                    android:layout_height="20dp"
+                    android:layout_marginLeft="70dp"
+                    android:alpha="0.5"
+                    android:layout_gravity="center_vertical"/>
+
+                <TextView
+                    android:id="@+id/cel6"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="TextView"
+                    android:textColor="@color/design_default_color_on_secondary" />
+            </FrameLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:orientation="horizontal">
+            <FrameLayout
+                android:id="@+id/F7"
+                android:layout_width="77dp"
+                android:layout_height="wrap_content">
+
+                <ProgressBar
+                    android:id="@+id/P_Cel7"
+                    style="@style/CustomProgressBarHorizontal"
+                    android:layout_width="70dp"
+                    android:layout_height="40dp"
+                    android:alpha="0.5" />
+                <ProgressBar
+                    android:id="@+id/Battt7"
+                    style="@style/CustomProgressBarHorizontal"
+                    android:layout_width="7dp"
+                    android:layout_height="20dp"
+                    android:layout_marginLeft="70dp"
+                    android:alpha="0.5"
+                    android:layout_gravity="center_vertical"/>
+
+                <TextView
+                    android:id="@+id/cel7"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="TextView"
+                    android:textColor="@color/design_default_color_on_secondary" />
+            </FrameLayout>
+
+
+            <FrameLayout
+                android:id="@+id/F8"
+                android:layout_width="77dp"
+                android:layout_marginRight="35dp"
+                android:layout_marginLeft="35dp"
+                android:layout_height="wrap_content">
+
+                <ProgressBar
+                    android:id="@+id/P_Cel8"
+                    style="@style/CustomProgressBarHorizontal"
+                    android:layout_width="70dp"
+                    android:layout_height="40dp"
+                    android:alpha="0.5" />
+                <ProgressBar
+                    android:id="@+id/Battt8"
+                    style="@style/CustomProgressBarHorizontal"
+                    android:layout_width="7dp"
+                    android:layout_height="20dp"
+                    android:layout_marginLeft="70dp"
+                    android:alpha="0.5"
+                    android:layout_gravity="center_vertical"/>
+
+                <TextView
+                    android:id="@+id/cel8"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="TextView"
+                    android:textColor="@color/design_default_color_on_secondary" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/F9"
+                android:layout_width="77dp"
+                android:layout_height="wrap_content">
+
+                <ProgressBar
+                    android:id="@+id/P_Cel9"
+                    style="@style/CustomProgressBarHorizontal"
+                    android:layout_width="70dp"
+                    android:layout_height="40dp"
+                    android:alpha="0.5" />
+                <ProgressBar
+                    android:id="@+id/Battt9"
+                    style="@style/CustomProgressBarHorizontal"
+                    android:layout_width="7dp"
+                    android:layout_height="20dp"
+                    android:layout_marginLeft="70dp"
+                    android:alpha="0.5"
+                    android:layout_gravity="center_vertical"/>
+
+                <TextView
+                    android:id="@+id/cel9"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="TextView"
+                    android:textColor="@color/design_default_color_on_secondary" />
+            </FrameLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:orientation="horizontal">
+            <FrameLayout
+                android:id="@+id/F10"
+                android:layout_width="77dp"
+                android:layout_height="wrap_content">
+
+                <ProgressBar
+                    android:id="@+id/P_Cel10"
+                    style="@style/CustomProgressBarHorizontal"
+                    android:layout_width="70dp"
+                    android:layout_height="40dp"
+                    android:alpha="0.5" />
+                <ProgressBar
+                    android:id="@+id/Battt10"
+                    style="@style/CustomProgressBarHorizontal"
+                    android:layout_width="7dp"
+                    android:layout_height="20dp"
+                    android:layout_marginLeft="70dp"
+                    android:alpha="0.5"
+                    android:layout_gravity="center_vertical"/>
+
+                <TextView
+                    android:id="@+id/cel10"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="TextView"
+                    android:textColor="@color/design_default_color_on_secondary" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/F11"
+                android:layout_width="77dp"
+                android:layout_marginRight="35dp"
+                android:layout_marginLeft="35dp"
+                android:layout_height="wrap_content">
+
+                <ProgressBar
+                    android:id="@+id/P_Cel11"
+                    style="@style/CustomProgressBarHorizontal"
+                    android:layout_width="70dp"
+                    android:layout_height="40dp"
+                    android:alpha="0.5" />
+                <ProgressBar
+                    android:id="@+id/Battt11"
+                    style="@style/CustomProgressBarHorizontal"
+                    android:layout_width="7dp"
+                    android:layout_height="20dp"
+                    android:layout_marginLeft="70dp"
+                    android:alpha="0.5"
+                    android:layout_gravity="center_vertical"/>
+
+                <TextView
+                    android:id="@+id/cel11"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="TextView"
+                    android:textColor="@color/design_default_color_on_secondary" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/F12"
+                android:layout_width="77dp"
+                android:layout_height="wrap_content">
+
+                <ProgressBar
+                    android:id="@+id/P_Cel12"
+                    style="@style/CustomProgressBarHorizontal"
+                    android:layout_width="70dp"
+                    android:layout_height="40dp"
+                    android:alpha="0.5" />
+                <ProgressBar
+                    android:id="@+id/Battt12"
+                    style="@style/CustomProgressBarHorizontal"
+                    android:layout_width="7dp"
+                    android:layout_height="20dp"
+                    android:layout_marginLeft="70dp"
+                    android:alpha="0.5"
+                    android:layout_gravity="center_vertical"/>
+
+                <TextView
+                    android:id="@+id/cel12"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="TextView"
+                    android:textColor="@color/design_default_color_on_secondary" />
+            </FrameLayout>
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:orientation="horizontal">
+            <FrameLayout
+                android:id="@+id/F13"
+                android:layout_width="77dp"
+                android:layout_height="wrap_content">
+
+                <ProgressBar
+                    android:id="@+id/P_Cel13"
+                    style="@style/CustomProgressBarHorizontal"
+                    android:layout_width="70dp"
+                    android:layout_height="40dp"
+                    android:alpha="0.5" />
+                <ProgressBar
+                    android:id="@+id/Battt13"
+                    style="@style/CustomProgressBarHorizontal"
+                    android:layout_width="7dp"
+                    android:layout_height="20dp"
+                    android:layout_marginLeft="70dp"
+                    android:alpha="0.5"
+                    android:layout_gravity="center_vertical"/>
+
+                <TextView
+                    android:id="@+id/cel13"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="TextView"
+                    android:textColor="@color/design_default_color_on_secondary" />
+            </FrameLayout>
+
+
+            <FrameLayout
+                android:id="@+id/F14"
+                android:layout_width="77dp"
+                android:layout_marginRight="35dp"
+                android:layout_marginLeft="35dp"
+                android:layout_height="wrap_content">
+
+                <ProgressBar
+                    android:id="@+id/P_Cel14"
+                    style="@style/CustomProgressBarHorizontal"
+                    android:layout_width="70dp"
+                    android:layout_height="40dp"
+                    android:alpha="0.5" />
+                <ProgressBar
+                    android:id="@+id/Battt14"
+                    style="@style/CustomProgressBarHorizontal"
+                    android:layout_width="7dp"
+                    android:layout_height="20dp"
+                    android:layout_marginLeft="70dp"
+                    android:alpha="0.5"
+                    android:layout_gravity="center_vertical"/>
+
+                <TextView
+                    android:id="@+id/cel14"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="TextView"
+                    android:textColor="@color/design_default_color_on_secondary" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/F15"
+                android:layout_width="77dp"
+                android:layout_height="wrap_content">
+
+                <ProgressBar
+                    android:id="@+id/P_Cel15"
+                    style="@style/CustomProgressBarHorizontal"
+                    android:layout_width="70dp"
+                    android:layout_height="40dp"
+                    android:alpha="0.5" />
+                <ProgressBar
+                    android:id="@+id/Battt15"
+                    style="@style/CustomProgressBarHorizontal"
+                    android:layout_width="7dp"
+                    android:layout_height="20dp"
+                    android:layout_marginLeft="70dp"
+                    android:alpha="0.5"
+                    android:layout_gravity="center_vertical"/>
+
+                <TextView
+                    android:id="@+id/cel15"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="TextView"
+                    android:textColor="@color/design_default_color_on_secondary" />
+            </FrameLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:orientation="horizontal">
+            <FrameLayout
+                android:id="@+id/F16"
+                android:layout_width="77dp"
+                android:layout_height="wrap_content">
+
+                <ProgressBar
+                    android:id="@+id/P_Cel16"
+                    style="@style/CustomProgressBarHorizontal"
+                    android:layout_width="70dp"
+                    android:layout_height="40dp"
+                    android:alpha="0.5" />
+                <ProgressBar
+                    android:id="@+id/Battt16"
+                    style="@style/CustomProgressBarHorizontal"
+                    android:layout_width="7dp"
+                    android:layout_height="20dp"
+                    android:layout_marginLeft="70dp"
+                    android:alpha="0.5"
+                    android:layout_gravity="center_vertical"/>
+
+                <TextView
+                    android:id="@+id/cel16"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="TextView"
+                    android:textColor="@color/design_default_color_on_secondary" />
+            </FrameLayout>
+
+
+            <FrameLayout
+                android:id="@+id/F17"
+                android:layout_width="77dp"
+                android:layout_marginRight="35dp"
+                android:layout_marginLeft="35dp"
+                android:layout_height="wrap_content">
+
+                <ProgressBar
+                    android:id="@+id/P_Cel17"
+                    style="@style/CustomProgressBarHorizontal"
+                    android:layout_width="70dp"
+                    android:layout_height="40dp"
+                    android:alpha="0.5" />
+                <ProgressBar
+                    android:id="@+id/Battt17"
+                    style="@style/CustomProgressBarHorizontal"
+                    android:layout_width="7dp"
+                    android:layout_height="20dp"
+                    android:layout_marginLeft="70dp"
+                    android:alpha="0.5"
+                    android:layout_gravity="center_vertical"/>
+
+                <TextView
+                    android:id="@+id/cel17"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="TextView"
+                    android:textColor="@color/design_default_color_on_secondary" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/F18"
+                android:layout_width="77dp"
+                android:layout_height="wrap_content">
+
+                <ProgressBar
+                    android:id="@+id/P_Cel18"
+                    style="@style/CustomProgressBarHorizontal"
+                    android:layout_width="70dp"
+                    android:layout_height="40dp"
+                    android:alpha="0.5" />
+                <ProgressBar
+                    android:id="@+id/Battt18"
+                    style="@style/CustomProgressBarHorizontal"
+                    android:layout_width="7dp"
+                    android:layout_height="20dp"
+                    android:layout_marginLeft="70dp"
+                    android:alpha="0.5"
+                    android:layout_gravity="center_vertical"/>
+
+                <TextView
+                    android:id="@+id/cel18"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="TextView"
+                    android:textColor="@color/design_default_color_on_secondary" />
+            </FrameLayout>
+
+        </LinearLayout>
+
+
+         </LinearLayout>
+
+        </HorizontalScrollView>
+
+    </ScrollView>
+</RelativeLayout>
