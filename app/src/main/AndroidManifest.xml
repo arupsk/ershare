@@ -71,7 +71,8 @@ f your app supports a service and can run on Android 10 (API level 29) or Androi
             android:exported="false" />
         <service
             android:name="com.Andriod.ER.com.ForegroundService"
-            android:foregroundServiceType="connectedDevice" />
+            android:foregroundServiceType="connectedDevice"
+            android:exported="false"/>
 
         <activity android:name=".com.HistoryActivity" />
         <activity
