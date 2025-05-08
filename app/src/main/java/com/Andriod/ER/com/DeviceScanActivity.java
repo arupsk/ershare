@@ -458,4 +458,3 @@ public class DeviceScanActivity extends ListActivity {
         TextView deviceAddress;
     }
 }
-
