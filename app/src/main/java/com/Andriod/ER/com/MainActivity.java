@@ -305,7 +305,6 @@ public class MainActivity extends AppCompatActivity {
             disconnect_BLE();
         }
         ClearInterface();
-
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -1019,12 +1018,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Step 3: Attempt reconnection only if device address is valid
-        if (mBluetoothLeService == null) {
-            Log.w(TAG, "mBluetoothLeService is null.");
-        }
-        if (mDeviceAddress == null) {
-            Log.w(TAG, "Device address is null.");
-        }
         if (mBluetoothLeService != null && mDeviceAddress != null) {
             Log.i(TAG, "Attempting BLE reconnect to: " + mDeviceAddress);
             final boolean result = mBluetoothLeService.connect(mDeviceAddress);
