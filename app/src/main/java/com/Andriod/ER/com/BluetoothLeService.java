@@ -1,5 +1,6 @@
 package com.Andriod.ER.com;
 
+import android.Manifest;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -8,75 +9,49 @@ import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
-import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.Manifest;
 import android.os.Binder;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
-import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
-
-import com.Andriod.ER.R;
 
 import java.util.List;
 
-import static java.lang.Math.abs;
-
-/**
- * Service for managing connection and data communication with a GATT server hosted on a
- * given Bluetooth LE device.
- */
-@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
+/* loaded from: classes.dex */
 public class BluetoothLeService extends Service {
-    private final static String TAG = BluetoothLeService.class.getSimpleName();
-
-    private BluetoothManager mBluetoothManager;
+    public static final String ACTION_DATA_AVAILABLE = "com.example.bluetooth.le.ACTION_DATA_AVAILABLE";
+    public static final String ACTION_GATT_CONNECTED = "com.example.bluetooth.le.ACTION_GATT_CONNECTED";
+    public static final String ACTION_GATT_DISCONNECTED = "com.example.bluetooth.le.ACTION_GATT_DISCONNECTED";
+    public static final String ACTION_GATT_SERVICES_DISCOVERED = "com.example.bluetooth.le.ACTION_GATT_SERVICES_DISCOVERED";
+    public static final String EXTRA_DATA = "com.example.bluetooth.le.EXTRA_DATA";
+    private static final int STATE_CONNECTED = 2;
+    private static final int STATE_CONNECTING = 1;
+    private static final int STATE_DISCONNECTED = 0;
+    private static final String TAG = BluetoothLeService.class.getSimpleName();
     private BluetoothAdapter mBluetoothAdapter;
     private String mBluetoothDeviceAddress;
     private BluetoothGatt mBluetoothGatt;
-    public int mConnectionState = STATE_DISCONNECTED;
-
-    private static final int STATE_DISCONNECTED = 0;
-    private static final int STATE_CONNECTING = 1;
-    private static final int STATE_CONNECTED = 2;
-
-    public final static String ACTION_GATT_CONNECTED =
-            "com.example.bluetooth.le.ACTION_GATT_CONNECTED";
-    public final static String ACTION_GATT_DISCONNECTED =
-            "com.example.bluetooth.le.ACTION_GATT_DISCONNECTED";
-    public final static String ACTION_GATT_SERVICES_DISCOVERED =
-            "com.example.bluetooth.le.ACTION_GATT_SERVICES_DISCOVERED";
-    public final static String ACTION_DATA_AVAILABLE =
-            "com.example.bluetooth.le.ACTION_DATA_AVAILABLE";
-    public final static String EXTRA_DATA = "com.example.bluetooth.le.EXTRA_DATA";
-
-
+    private BluetoothManager mBluetoothManager;
+    public int mConnectionState = 0;
     public boolean cellenDataReady = false;
-
-    byte[] one = {};
-    byte[] two = {};
-    byte[] combined = {};
-
-    // values decleration
-    public float volts = (float) 00.0;
-    public float amps = (float) 00.0;
-    public float Ramps = (float) 00.0;
-    public float percentage = (float) 00.0;
-    public  float temp1 = (float) 00.0;
-    public float temp2 = (float) 00.0;
-    public float time = (float) 00.0;
-    public float RemainCap = (float) 00.0;
-    public float NomCap = (float) 00.0;
+    byte[] one = new byte[0];
+    byte[] two = new byte[0];
+    byte[] combined = new byte[0];
+    public float volts = 0.0f;
+    public float amps = 0.0f;
+    public float Ramps = 0.0f;
+    public float percentage = 0.0f;
+    public float temp1 = 0.0f;
+    public float temp2 = 0.0f;
+    public float time = 0.0f;
+    public float RemainCap = 0.0f;
+    public float NomCap = 0.0f;
     public int AantalCellen = 0;
-    public double[] cellen = {(float) 0.00};
-
-    //protection data
+    public double[] cellen = {0.0d};
     public int SOV = 0;
     public int SUV = 0;
     public int POV = 0;
@@ -89,597 +64,463 @@ public class BluetoothLeService extends Service {
     public int DOC = 0;
     public int SC = 0;
     public int IC_Error = 0;
-    public float lockData = 0;
-
-
+    public float lockData = 0.0f;
     public int amount_old_data = 0;
     public int amount_old_cellen_data = 0;
-
-
-    //Calepration
     public int Temp_Sensors_Data = 0;
-    public float NomCap_Par = (float) 00.0;
+    public float NomCap_Par = 0.0f;
     public int Mosfets = 0;
-
-    //Calibration parameters
-    //                  Register                            Name                                                        //Unit
-    public byte Reg_Design_capacity = 0x10;                 public float Design_capacity = (float) 00.0;                //10mAh
-    public byte Reg_Circulation_capacity = 0x11;            public float Circulation_capacity = (float) 00.0;           //10mAh
-    public byte Reg_Single_unit_full_voltage = 0x12;        public float Single_unit_full_voltage = (float) 00.0;       //mv
-    public byte Reg_Single_cut_off_voltage = 0x12;          public float Single_cut_off_voltage = (float) 00.0;         //mv
-
-
-    public byte Reg_Cell_Under_voltage_par = 0x26;          public float Cell_Under_voltage_par = (float) 00.0;                 //1mv
-    public byte Reg_Cell_Under_voltage_releas_par = 0x27;   public float Cell_Under_voltage_releas_par = (float) 00.0;          //1mv
-    public byte Reg_Pack_Under_voltage_par = 0x22;          public float Pack_Under_voltage_par = (float) 00.0;                 //10mv
-    public byte Reg_Pack_Under_voltage_releas_par = 0x23;   public float Pack_Under_voltage_releas_par = (float) 00.0;          //10mv
-
-
-    //cells
-    float cel1 = 0;
-    float cel2 = 0;
-    float cel3 = 0;
-    float cel4 = 0;
-    float cel5 = 0;
-    float cel6 = 0;
-    float cel7 = 0;
-    float cel8 = 0;
-    float cel9 = 0;
-    float cel10 = 0;
-    float cel11 = 0;
-    float cel12 = 0;
-    float cel13 = 0;
-    float cel14 = 0;
-    float cel15 = 0;
-    float cel16 = 0;
-
+    public byte Reg_Design_capacity = 16;
+    public float Design_capacity = 0.0f;
+    public byte Reg_Circulation_capacity = 17;
+    public float Circulation_capacity = 0.0f;
+    public byte Reg_Single_unit_full_voltage = 18;
+    public float Single_unit_full_voltage = 0.0f;
+    public byte Reg_Single_cut_off_voltage = 18;
+    public float Single_cut_off_voltage = 0.0f;
+    public byte Reg_Cell_Under_voltage_par = 38;
+    public float Cell_Under_voltage_par = 0.0f;
+    public byte Reg_Cell_Under_voltage_releas_par = 39;
+    public float Cell_Under_voltage_releas_par = 0.0f;
+    public byte Reg_Pack_Under_voltage_par = 34;
+    public float Pack_Under_voltage_par = 0.0f;
+    public byte Reg_Pack_Under_voltage_releas_par = 35;
+    public float Pack_Under_voltage_releas_par = 0.0f;
+    float cel1 = 0.0f;
+    float cel2 = 0.0f;
+    float cel3 = 0.0f;
+    float cel4 = 0.0f;
+    float cel5 = 0.0f;
+    float cel6 = 0.0f;
+    float cel7 = 0.0f;
+    float cel8 = 0.0f;
+    float cel9 = 0.0f;
+    float cel10 = 0.0f;
+    float cel11 = 0.0f;
+    float cel12 = 0.0f;
+    float cel13 = 0.0f;
+    float cel14 = 0.0f;
+    float cel15 = 0.0f;
+    float cel16 = 0.0f;
     public boolean ReadComand_ready = false;
     public boolean CellenCommand_ready = false;
-
-
-    //Arrays for the old data
-    public class oldData{
-        //time data
-        public float sec = (float) 00.0;
-        public float min = (float) 00.0;
-        public float hour = (float) 00.0;
-        public float day = (float) 00.0;
-        public float month = (float) 00.0;
-        public float year = (float) 00.0;
-        //basics data
-        public float volts = (float) 00.0;
-        public float amps = (float) 00.0;
-        public float Ramps = (float) 00.0;
-        public float percentage = (float) 00.0;
-        public  float temp1 = (float) 00.0;
-        public float temp2 = (float) 00.0;
-        public float time = (float) 00.0;
-        public float RemainCap = (float) 00.0;
-        public float NomCap = (float) 00.0;
-    }
-
-
-
-    /*public float[] volts_old = {(float) 00.0};
-    public float[] amps_old = {(float) 00.0};
-    public float[] Ramps_old = {(float) 00.0};
-    public float[] percentage_old = {(float) 00.0};
-    public  float[] temp1_old = {(float) 00.0};
-    public float[] temp2_old = {(float) 00.0};
-    public float[] time_old = {(float) 00.0};
-    public float[] RemainCap_old = {(float) 00.0};
-    public float[] NomCap_old = {(float) 00.0};
-    public static int[] AantalCellen_old = {(int) 0};
-    public float[][] cellen_old = new float[][]{{(float) 0.00}, {(float) 0.00}};
-*/
-
-
-
     public boolean DataReady = false;
+    private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() { // from class: com.Andriod.ER.com.BluetoothLeService.1
 
 
-    // Implements callback methods for GATT events that the app cares about.  For example,
-    // connection change and services discovered.
-    private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
-        @Override
-        public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
-            String intentAction;
-            if (newState == BluetoothProfile.STATE_CONNECTED) {
-                intentAction = ACTION_GATT_CONNECTED;
-                mConnectionState = STATE_CONNECTED;
-                broadcastUpdate(intentAction);
-                Log.i(TAG, "Connected to GATT server.");
-                // Attempts to discover services after successful connection.
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
-                        ContextCompat.checkSelfPermission(BluetoothLeService.this, Manifest.permission.BLUETOOTH_CONNECT)
-                                != PackageManager.PERMISSION_GRANTED) {
-
-                    Log.w(TAG, "Missing BLUETOOTH_CONNECT permission; skipping service discovery.");
-                    // Optional: notify the Activity to recheck permissions
+        @Override // android.bluetooth.BluetoothGattCallback
+        public void onConnectionStateChange(BluetoothGatt bluetoothGatt, int i, int i2) {
+            if (i2 != 2) {
+                if (i2 == 0) {
+                    BluetoothLeService.this.mConnectionState = 0;
+                    Log.i(BluetoothLeService.TAG, "Disconnected from GATT server.");
+                    BluetoothLeService.this.broadcastUpdate(BluetoothLeService.ACTION_GATT_DISCONNECTED);
                     return;
                 }
-                Log.i(TAG, "Attempting to start service discovery:" +
-                        mBluetoothGatt.discoverServices());
+                return;
+            }
+            BluetoothLeService.this.mConnectionState = 2;
+            BluetoothLeService.this.broadcastUpdate(BluetoothLeService.ACTION_GATT_CONNECTED);
+            Log.i(BluetoothLeService.TAG, "Connected to GATT server.");
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+                    ContextCompat.checkSelfPermission(BluetoothLeService.this, Manifest.permission.BLUETOOTH_CONNECT)
+                            != PackageManager.PERMISSION_GRANTED) {
 
-            } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                intentAction = ACTION_GATT_DISCONNECTED;
-                mConnectionState = STATE_DISCONNECTED;
-                Log.i(TAG, "Disconnected from GATT server.");
-                broadcastUpdate(intentAction);
+                Log.w(TAG, "Missing BLUETOOTH_CONNECT permission; skipping service discovery.");
+                // Optional: notify the Activity to recheck permissions
+                return;
+            }
+            Log.i(BluetoothLeService.TAG, "Attempting to start service discovery:" + BluetoothLeService.this.mBluetoothGatt.discoverServices());
+        }
+
+        @Override // android.bluetooth.BluetoothGattCallback
+        public void onServicesDiscovered(BluetoothGatt bluetoothGatt, int i) {
+            if (i == 0) {
+                BluetoothLeService.this.broadcastUpdate(BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED);
+                return;
+            }
+            Log.w(BluetoothLeService.TAG, "onServicesDiscovered received: " + i);
+            Log.i(BluetoothLeService.TAG, "uuid:" + bluetoothGatt);
+        }
+
+        @Override // android.bluetooth.BluetoothGattCallback
+        public void onCharacteristicRead(BluetoothGatt bluetoothGatt, BluetoothGattCharacteristic bluetoothGattCharacteristic, int i) {
+            if (i == 0) {
+                BluetoothLeService.this.broadcastUpdate(BluetoothLeService.ACTION_DATA_AVAILABLE, bluetoothGattCharacteristic);
+                Log.i(BluetoothLeService.TAG, "Charuuid:" + bluetoothGattCharacteristic);
             }
         }
 
-        @Override
-        public void onServicesDiscovered(BluetoothGatt gatt, int status) {
-            if (status == BluetoothGatt.GATT_SUCCESS) {
-                broadcastUpdate(ACTION_GATT_SERVICES_DISCOVERED);
-            } else {
-                Log.w(TAG, "onServicesDiscovered received: " + status);
-                Log.i(TAG, "uuid:" + gatt);
-
-            }
-        }
-
-        @Override
-        public void onCharacteristicRead(BluetoothGatt gatt,
-                                         BluetoothGattCharacteristic characteristic,
-                                         int status) {
-            if (status == BluetoothGatt.GATT_SUCCESS) {
-                broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
-                Log.i(TAG, "Charuuid:" + characteristic);
-            }
-        }
-
-        @Override
-        public void onCharacteristicChanged(BluetoothGatt gatt,
-                                            BluetoothGattCharacteristic characteristic) {
-            broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
-            Log.i(TAG, "CharChangeduuid:" + characteristic);
-
+        @Override // android.bluetooth.BluetoothGattCallback
+        public void onCharacteristicChanged(BluetoothGatt bluetoothGatt, BluetoothGattCharacteristic bluetoothGattCharacteristic) {
+            BluetoothLeService.this.broadcastUpdate(BluetoothLeService.ACTION_DATA_AVAILABLE, bluetoothGattCharacteristic);
+            Log.i(BluetoothLeService.TAG, "CharChangeduuid:" + bluetoothGattCharacteristic);
         }
     };
+    private final IBinder mBinder = new LocalBinder();
 
-
-    private void broadcastUpdate(final String action) {
-        final Intent intent = new Intent(action);
-        sendBroadcast(intent);
-
+    public int getBit(int i, int i2) {
+        return (i >> i2) & 1;
     }
 
-    //Read function
-    private void broadcastUpdate(final String action,final BluetoothGattCharacteristic characteristic) {
-        final Intent intent = new Intent(action);
-        final byte[] data = characteristic.getValue();
+    public class oldData {
+        public float sec = 0.0f;
+        public float min = 0.0f;
+        public float hour = 0.0f;
+        public float day = 0.0f;
+        public float month = 0.0f;
+        public float year = 0.0f;
+        public float volts = 0.0f;
+        public float amps = 0.0f;
+        public float Ramps = 0.0f;
+        public float percentage = 0.0f;
+        public float temp1 = 0.0f;
+        public float temp2 = 0.0f;
+        public float time = 0.0f;
+        public float RemainCap = 0.0f;
+        public float NomCap = 0.0f;
 
-        if (data != null && data.length > 0) {
-            final StringBuilder stringBuilder = new StringBuilder(data.length);
-            for(byte byteChar : data)
-                stringBuilder.append(String.format("%02X ", byteChar));
-            intent.putExtra(EXTRA_DATA,String.format("%s", new String(data)));
-           //encodeHexString(data);
-            ReadingData(data);
+        public oldData() {
+        }
+    }
+
+    /* renamed from: com.Andriod.ER.com.BluetoothLeService$1 */
+    class AnonymousClass1 extends BluetoothGattCallback {
+        AnonymousClass1() {
+        }
+
+        @Override // android.bluetooth.BluetoothGattCallback
+        public void onConnectionStateChange(BluetoothGatt bluetoothGatt, int i, int i2) {
+            if (i2 != 2) {
+                if (i2 == 0) {
+                    BluetoothLeService.this.mConnectionState = 0;
+                    Log.i(BluetoothLeService.TAG, "Disconnected from GATT server.");
+                    BluetoothLeService.this.broadcastUpdate(BluetoothLeService.ACTION_GATT_DISCONNECTED);
+                    return;
+                }
+                return;
+            }
+            BluetoothLeService.this.mConnectionState = 2;
+            BluetoothLeService.this.broadcastUpdate(BluetoothLeService.ACTION_GATT_CONNECTED);
+            Log.i(BluetoothLeService.TAG, "Connected to GATT server.");
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+                    ContextCompat.checkSelfPermission(BluetoothLeService.this, Manifest.permission.BLUETOOTH_CONNECT)
+                            != PackageManager.PERMISSION_GRANTED) {
+
+                Log.w(TAG, "Missing BLUETOOTH_CONNECT permission; skipping service discovery.");
+                // Optional: notify the Activity to recheck permissions
+                return;
+            }
+            Log.i(BluetoothLeService.TAG, "Attempting to start service discovery:" + BluetoothLeService.this.mBluetoothGatt.discoverServices());
+        }
+
+        @Override // android.bluetooth.BluetoothGattCallback
+        public void onServicesDiscovered(BluetoothGatt bluetoothGatt, int i) {
+            if (i == 0) {
+                BluetoothLeService.this.broadcastUpdate(BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED);
+                return;
+            }
+            Log.w(BluetoothLeService.TAG, "onServicesDiscovered received: " + i);
+            Log.i(BluetoothLeService.TAG, "uuid:" + bluetoothGatt);
+        }
+
+        @Override // android.bluetooth.BluetoothGattCallback
+        public void onCharacteristicRead(BluetoothGatt bluetoothGatt, BluetoothGattCharacteristic bluetoothGattCharacteristic, int i) {
+            if (i == 0) {
+                BluetoothLeService.this.broadcastUpdate(BluetoothLeService.ACTION_DATA_AVAILABLE, bluetoothGattCharacteristic);
+                Log.i(BluetoothLeService.TAG, "Charuuid:" + bluetoothGattCharacteristic);
+            }
+        }
+
+        @Override // android.bluetooth.BluetoothGattCallback
+        public void onCharacteristicChanged(BluetoothGatt bluetoothGatt, BluetoothGattCharacteristic bluetoothGattCharacteristic) {
+            BluetoothLeService.this.broadcastUpdate(BluetoothLeService.ACTION_DATA_AVAILABLE, bluetoothGattCharacteristic);
+            Log.i(BluetoothLeService.TAG, "CharChangeduuid:" + bluetoothGattCharacteristic);
+        }
+    }
+
+    public void broadcastUpdate(String str) {
+        sendBroadcast(new Intent(str));
+    }
+
+    public void broadcastUpdate(String str, BluetoothGattCharacteristic bluetoothGattCharacteristic) {
+        Intent intent = new Intent(str);
+        byte[] value = bluetoothGattCharacteristic.getValue();
+        if (value != null && value.length > 0) {
+            StringBuilder sb = new StringBuilder(value.length);
+            for (byte b : value) {
+                sb.append(String.format("%02X ", Byte.valueOf(b)));
+            }
+            intent.putExtra(EXTRA_DATA, String.format("%s", new String(value)));
+            ReadingData(value);
         }
         sendBroadcast(intent);
     }
 
     public class LocalBinder extends Binder {
+        public LocalBinder() {
+        }
+
         BluetoothLeService getService() {
             return BluetoothLeService.this;
         }
     }
 
-
-    public void ReadingData(byte[] DataIn)
-    {
-        long begin = 0xdd;
-        long end = 0x77;
-        List list = null;
-        if ((DataIn[0] & 0xFF) == begin)
-        {
-            one = DataIn;
-           // Log.i(TAG, "New Data..");
-            combined = one;
+    public void ReadingData(byte[] bArr) {
+        if ((bArr[0] & 255) == 221) {
+            this.one = bArr;
+            this.combined = bArr;
+        } else {
+            this.two = bArr;
+            byte[] bArr2 = this.one;
+            byte[] bArr3 = new byte[bArr2.length + bArr.length];
+            System.arraycopy(bArr2, 0, bArr3, 0, bArr2.length);
+            byte[] bArr4 = this.two;
+            System.arraycopy(bArr4, 0, bArr3, this.one.length, bArr4.length);
+            this.combined = bArr3;
         }
-        else
-        {
-            // merging two lines of data
-            two = DataIn;
-            //Log.i(TAG, "Adding data together..");
-            byte[] c = new byte[one.length + two.length];
-            System.arraycopy(one, 0, c, 0, one.length);
-            System.arraycopy(two, 0, c, one.length, two.length);
-
-            combined = c;
-        }
-
-        encodeHexString(combined);
-      //  if ((combined[combined.length - 1] & 0xFF) == end)
-       // {
-            Log.i(TAG, "End of line.. Now DataProcessing");
-            procesdata(combined);
-
-       // }
+        encodeHexString(this.combined);
+        Log.i(TAG, "End of line.. Now DataProcessing");
+        procesdata(this.combined);
     }
 
-
-    public String encodeHexString(byte[] byteArray) {
-        StringBuffer hexStringBuffer = new StringBuffer();
-        for (int i = 0; i < byteArray.length; i++) {
-            hexStringBuffer.append(String.format("%02X ", byteArray[i]));
+    public String encodeHexString(byte[] bArr) {
+        StringBuffer stringBuffer = new StringBuffer();
+        for (byte b : bArr) {
+            stringBuffer.append(String.format("%02X ", Byte.valueOf(b)));
         }
-        Log.i(TAG,"Data hexString in:" + hexStringBuffer);
-        return hexStringBuffer.toString();
+        Log.i(TAG, "Data hexString in:" + ((Object) stringBuffer));
+        return stringBuffer.toString();
     }
 
-    public int getBit(int ID, int position)
-    {
-        return (ID >> position) & 1;
-    }
-
-    public void procesdata(byte[] DataIn)
-    {
-        if (((DataIn[1] & 0xFF) == 0x03)&&(DataIn.length>30))
-        {
+    public void procesdata(byte[] bArr) {
+        if ((bArr[1] & 255) == 3 && bArr.length > 30) {
             Log.i(TAG, "DataIn[1] & 0xFF) == 0x03");
-
-            float volts1 = ((DataIn[4] & 0xFF) << 8 | (DataIn[5] & 0xFF));
-            volts = volts1 / 100;
-
-            float amps1 = ((DataIn[6] & 0xFF) << 8 | (DataIn[7] & 0xFF));
-            amps = amps1;
-
-            if (amps > 25000)
-            {
-                Ramps = (amps - 65536) / 100;
+            this.volts = (((bArr[4] & 255) << 8) | (bArr[5] & 255)) / 100.0f;
+            float f = ((bArr[6] & 255) << 8) | (bArr[7] & 255);
+            this.amps = f;
+            if (f > 25000.0f) {
+                this.Ramps = (f - 65536.0f) / 100.0f;
+            } else if (f < 25000.0f) {
+                this.Ramps = f / 100.0f;
             }
-            else if (amps < 25000)
-            {
-                Ramps = amps / 100;
+            float f2 = (((bArr[8] & 255) << 8) | (bArr[9] & 255)) / 100.0f;
+            this.RemainCap = f2;
+            float f3 = ((bArr[11] & 255) | ((bArr[10] & 255) << 8)) / 100.0f;
+            this.NomCap = f3;
+            this.percentage = bArr[23];
+            float f4 = this.Ramps;
+            if (f4 != 0.0d) {
+                if (f4 < 0.0d) {
+                    this.time = f2 / Math.abs(f4);
+                } else if (f4 > 0.0d) {
+                    this.time = (f3 - f2) / Math.abs(f4);
+                }
+            } else if (this.amps == 0.0d) {
+                this.time = 0.0f;
             }
-            float RemainCap1 = ((DataIn[8] & 0xFF) << 8 | (DataIn[9] & 0xFF));
-            RemainCap = RemainCap1 / 100;
-
-            float NomCap1 = ((DataIn[10] & 0xFF) << 8 | (DataIn[11] & 0xFF));
-            NomCap = NomCap1 / 100;
-
-            float percentage1 = DataIn[23];
-            percentage = percentage1;
-
-
-            //time
-            if (Ramps != 00.00){
-                if (Ramps < 00.00){ time = (RemainCap /  abs(Ramps));}
-                else if (Ramps > 00.00) {time = ((NomCap - RemainCap) /  abs(Ramps));}
+            this.temp1 = ((((bArr[27] & 255) << 8) | (bArr[28] & 255)) - 2731.0f) / 10.0f;
+            if ((bArr[26] & 255) == 2) {
+                this.temp2 = ((((bArr[29] & 255) << 8) | (bArr[30] & 255)) - 2731.0f) / 10.0f;
+            } else if ((bArr[26] & 255) == 1) {
+                this.temp2 = 0.0f;
             }
-            else if (amps == 00.00) { time = (float) 00.00;
-            }
-
-           float temp11 = ((DataIn[27] & 0xFF) << 8 | (DataIn[28] & 0xFF));
-            temp1 = (temp11 - 2731) / 10;
-            if ((DataIn[26] & 0xFF) == 0x02)
-            {
-                float temp22 = ((DataIn[29] & 0xFF) << 8 | (DataIn[30] & 0xFF));
-                temp2 = (temp22 - 2731) / 10;
-
-            }
-            else if ((DataIn[26] & 0xFF) == 0x01)
-            {
-                temp2 = (float) 00.00;     //no temp2
-
-            }
-
-            int Protectionstate = ((DataIn[20] & 0xFF) << 8 | (DataIn[21] & 0xFF));
-            lockData = Protectionstate >> 12;
-            SOV = getBit(Protectionstate, 0);
-            SUV = getBit(Protectionstate, 1);
-            POV = getBit(Protectionstate, 2);
-            PUV = getBit(Protectionstate, 3);
-            COT = getBit(Protectionstate, 4);
-            CUT = getBit(Protectionstate, 5);
-            DOT = getBit(Protectionstate, 6);
-            DUT = getBit(Protectionstate, 7);
-            COC = getBit(Protectionstate, 7);
-            DOC = getBit(Protectionstate, 9);
-            SC = getBit(Protectionstate, 10);
-            IC_Error = getBit(Protectionstate, 11);
-            Mosfets = DataIn[24];
-            //22 mosfet byte
-            //24
-           // Log.i(TAG, "Data prosessing finished!");
-
-            DataReady = true;
-           // Log.i(TAG, "lockData: " + lockData);
-           /*   Log.i(TAG, "BattData: " + "/n V:" + volts + "/n I:" + Ramps + "/n percent:" + percentage + "/n Temps1:"
-                  + temp1 + "/n Temps2:" +  temp2 + "/n time:" + time + "/n nomcap:" + NomCap  + "/n Remcap" + RemainCap);*/
-            ReadComand_ready = true;
-        }
-
-        else if ((DataIn[1] & 0xFF) == 0x04) {
-            AantalCellen = (DataIn[3] & 0xFF)/2;
-            int y = 0;
-            /*for(int x = 0; x < AantalCellen; x++) {
-
-                //Log.i(TAG, "Ik ben hier, aanralcellen:"+ AantalCellen + " ,x=" + x);
-                float cel = ((DataIn[4 + y] & 0xFF) << 8 | (DataIn[5 + y] & 0xFF));
-                cellen[x] = cel/1000;
-                y = y + 2;
-               // Log.i(TAG, "cel " + x + "=" + cellen[x] + "V");
-            }
-          */
-           // Log.i(TAG, "AantalCellen: "  + AantalCellen);
-            process_Cells(DataIn, AantalCellen);
-            cellenDataReady = true;
-
-        }
-//SD =>0xDD, 0x08, year, month, day, hour, minute, sec, (0x03 of oxo4), data
-
-        else if ((DataIn[1] & 0xFF) == 0x2E)
-        {
-            Temp_Sensors_Data = (DataIn[5] & 0xFF);
-        }
-
-        else if ((DataIn[1] & 0xFF) == 0x10)
-        {
-            float NomCap1_par = ((DataIn[4] & 0xFF) << 8 | (DataIn[5] & 0xFF));
-            NomCap_Par = NomCap1_par / 100;
-        }
-        else if ((DataIn[1] & 0xFF) == Reg_Cell_Under_voltage_releas_par)
-        {
-            if(((DataIn[2] & 0xFF) != 0)||((DataIn[2] & 0xFF) != 80)) {
-                float UVP_Par1 = ((DataIn[4] & 0xFF) << 8 | (DataIn[5] & 0xFF));
-                Cell_Under_voltage_releas_par = UVP_Par1 / 1000;
-             //   Log.i(TAG, "Cell_Under_voltage_releas_par = " + Cell_Under_voltage_releas_par + " V");
-            }
-
-        }
-        else if ((DataIn[1] & 0xFF) == Reg_Cell_Under_voltage_par)
-        {
-            if(((DataIn[2] & 0xFF) != 0)||((DataIn[2] & 0xFF) != 80)) {
-
-                float UV_Par1 = ((DataIn[4] & 0xFF) << 8 | (DataIn[5] & 0xFF));
-                Cell_Under_voltage_par = UV_Par1 / 1000;
-                //Log.i(TAG, "Cell_Under_voltage_par = " + Cell_Under_voltage_par + " V");
-            }
-
-        }
-        else if ((DataIn[1] & 0xFF) == Reg_Pack_Under_voltage_releas_par)
-        {
-            if(((DataIn[2] & 0xFF) != 0)||((DataIn[2] & 0xFF) != 80)) {
-
-                float UV_Par1 = ((DataIn[4] & 0xFF) << 8 | (DataIn[5] & 0xFF));
-                Pack_Under_voltage_releas_par = UV_Par1 / 100;
-             //   Log.i(TAG, "Pack_Under_voltage_releas_par = " + Pack_Under_voltage_releas_par + " V");
-            }
-
-        }
-        else if ((DataIn[1] & 0xFF) == Reg_Pack_Under_voltage_par)
-        {
-            if(((DataIn[2] & 0xFF) != 0)||((DataIn[2] & 0xFF) != 80)) {
-
-                float UV_Par1 = ((DataIn[4] & 0xFF) << 8 | (DataIn[5] & 0xFF));
-                Pack_Under_voltage_par = UV_Par1 / 100;
-              //  Log.i(TAG, "Pack_Under_voltage_par = " + Pack_Under_voltage_par + " V");
-            }
-        }
-
-        else {
-            Log.i(TAG, "Unexpected Data:" + DataIn);
+            int i = ((bArr[20] & 255) << 8) | (bArr[21] & 255);
+            this.lockData = i >> 12;
+            this.SOV = getBit(i, 0);
+            this.SUV = getBit(i, 1);
+            this.POV = getBit(i, 2);
+            this.PUV = getBit(i, 3);
+            this.COT = getBit(i, 4);
+            this.CUT = getBit(i, 5);
+            this.DOT = getBit(i, 6);
+            this.DUT = getBit(i, 7);
+            this.COC = getBit(i, 7);
+            this.DOC = getBit(i, 9);
+            this.SC = getBit(i, 10);
+            this.IC_Error = getBit(i, 11);
+            this.Mosfets = bArr[24];
+            this.DataReady = true;
+            this.ReadComand_ready = true;
             return;
-
         }
-
+        if ((bArr[1] & 255) == 4) {
+            int i2 = (bArr[3] & 255) / 2;
+            this.AantalCellen = i2;
+            process_Cells(bArr, i2);
+            this.cellenDataReady = true;
+            return;
+        }
+        if ((bArr[1] & 255) == 46) {
+            this.Temp_Sensors_Data = bArr[5] & 255;
+            return;
+        }
+        if ((bArr[1] & 255) == 16) {
+            this.NomCap_Par = ((bArr[5] & 255) | ((bArr[4] & 255) << 8)) / 100.0f;
+            return;
+        }
+        if ((bArr[1] & 255) == this.Reg_Cell_Under_voltage_releas_par) {
+            if ((bArr[2] & 255) == 0 && (bArr[2] & 255) == 80) {
+                return;
+            }
+            this.Cell_Under_voltage_releas_par = ((bArr[5] & 255) | ((bArr[4] & 255) << 8)) / 1000.0f;
+            return;
+        }
+        if ((bArr[1] & 255) == this.Reg_Cell_Under_voltage_par) {
+            if ((bArr[2] & 255) == 0 && (bArr[2] & 255) == 80) {
+                return;
+            }
+            this.Cell_Under_voltage_par = ((bArr[5] & 255) | ((bArr[4] & 255) << 8)) / 1000.0f;
+            return;
+        }
+        if ((bArr[1] & 255) == this.Reg_Pack_Under_voltage_releas_par) {
+            if ((bArr[2] & 255) == 0 && (bArr[2] & 255) == 80) {
+                return;
+            }
+            this.Pack_Under_voltage_releas_par = ((bArr[5] & 255) | ((bArr[4] & 255) << 8)) / 100.0f;
+            return;
+        }
+        if ((bArr[1] & 255) == this.Reg_Pack_Under_voltage_par) {
+            if ((bArr[2] & 255) == 0 && (bArr[2] & 255) == 80) {
+                return;
+            }
+            this.Pack_Under_voltage_par = ((bArr[5] & 255) | ((bArr[4] & 255) << 8)) / 100.0f;
+            return;
+        }
+        Log.i(TAG, "Unexpected Data:" + bArr);
     }
 
-
-    public void process_Cells(byte[] DataIn, int NumCells)
-    {
-        float cel = 0;
-        //4,8,12 en 16
-        if (NumCells >= 4)
-        {
-            cel = ((DataIn[4] & 0xFF) << 8 | (DataIn[5] & 0xFF));
-            cel1 = cel/1000;
-            cel = ((DataIn[6] & 0xFF) << 8 | (DataIn[7] & 0xFF));
-            cel2 = cel/1000;
-            cel = ((DataIn[8] & 0xFF) << 8 | (DataIn[9] & 0xFF));
-            cel3 = cel/1000;
-            cel = ((DataIn[10] & 0xFF) << 8 | (DataIn[11] & 0xFF));
-            cel4 = cel/1000;
+    public void process_Cells(byte[] bArr, int i) {
+        if (i >= 4) {
+            this.cel1 = (((bArr[4] & 255) << 8) | (bArr[5] & 255)) / 1000.0f;
+            this.cel2 = (((bArr[6] & 255) << 8) | (bArr[7] & 255)) / 1000.0f;
+            this.cel3 = (((bArr[8] & 255) << 8) | (bArr[9] & 255)) / 1000.0f;
+            this.cel4 = (((bArr[10] & 255) << 8) | (bArr[11] & 255)) / 1000.0f;
         }
-        if (NumCells >= 8)
-        {
-            cel = ((DataIn[12] & 0xFF) << 8 | (DataIn[13] & 0xFF));
-            cel5 = cel/1000;
-            cel = ((DataIn[14] & 0xFF) << 8 | (DataIn[15] & 0xFF));
-            cel6 = cel/1000;
-            cel = ((DataIn[16] & 0xFF) << 8 | (DataIn[17] & 0xFF));
-            cel7 = cel/1000;
-            cel = ((DataIn[18] & 0xFF) << 8 | (DataIn[19] & 0xFF));
-            cel8 = cel/1000;
+        if (i >= 8) {
+            this.cel5 = (((bArr[12] & 255) << 8) | (bArr[13] & 255)) / 1000.0f;
+            this.cel6 = (((bArr[14] & 255) << 8) | (bArr[15] & 255)) / 1000.0f;
+            this.cel7 = (((bArr[16] & 255) << 8) | (bArr[17] & 255)) / 1000.0f;
+            this.cel8 = (((bArr[18] & 255) << 8) | (bArr[19] & 255)) / 1000.0f;
         }
-        if (NumCells >= 12)
-        {
-            cel = ((DataIn[20] & 0xFF) << 8 | (DataIn[21] & 0xFF));
-            cel9 = cel/1000;
-            cel = ((DataIn[22] & 0xFF) << 8 | (DataIn[23] & 0xFF));
-            cel10 = cel/1000;
-            cel = ((DataIn[24] & 0xFF) << 8 | (DataIn[25] & 0xFF));
-            cel11 = cel/1000;
-            cel = ((DataIn[26] & 0xFF) << 8 | (DataIn[27] & 0xFF));
-            cel12 = cel/1000;
+        if (i >= 12) {
+            this.cel9 = (((bArr[20] & 255) << 8) | (bArr[21] & 255)) / 1000.0f;
+            this.cel10 = (((bArr[22] & 255) << 8) | (bArr[23] & 255)) / 1000.0f;
+            this.cel11 = (((bArr[24] & 255) << 8) | (bArr[25] & 255)) / 1000.0f;
+            this.cel12 = (((bArr[26] & 255) << 8) | (bArr[27] & 255)) / 1000.0f;
         }
-        if (NumCells >= 16)
-        {
-            cel = ((DataIn[28] & 0xFF) << 8 | (DataIn[29] & 0xFF));
-            cel13 = cel/1000;
-            cel = ((DataIn[30] & 0xFF) << 8 | (DataIn[31] & 0xFF));
-            cel14 = cel/1000;
-            cel = ((DataIn[32] & 0xFF) << 8 | (DataIn[33] & 0xFF));
-            cel15 = cel/1000;
-            cel = ((DataIn[34] & 0xFF) << 8 | (DataIn[35] & 0xFF));
-            cel16 = cel/1000;
+        if (i >= 16) {
+            this.cel13 = (((bArr[28] & 255) << 8) | (bArr[29] & 255)) / 1000.0f;
+            this.cel14 = (((bArr[30] & 255) << 8) | (bArr[31] & 255)) / 1000.0f;
+            this.cel15 = (((bArr[32] & 255) << 8) | (bArr[33] & 255)) / 1000.0f;
+            this.cel16 = ((bArr[35] & 255) | ((bArr[34] & 255) << 8)) / 1000.0f;
         }
-
-        CellenCommand_ready = true;
-       /* Log.i(TAG, "cel " + 1 + "=" + cel1 + "V" + ",cel " + 2 + "=" + cel2+ ",cel " + 3 + "=" + cel3 + ",cel " + 4 + "=" + cel4
-                + "cel " + 5 + "=" + cel5 + "V" + ",cel " + 6 + "=" + cel6+ ",cel " + 7 + "=" + cel7 + ",cel " + 8 + "=" + cel8
-                + "cel " + 9 + "=" + cel9 + "V" + ",cel " + 10 + "=" + cel10+ ",cel " + 11 + "=" + cel11 + ",cel " + 12 + "=" + cel12
-                + "cel " + 13 + "=" + cel13 + "V" + ",cel " + 14 + "=" + cel14+ ",cel " + 15 + "=" + cel15 + ",cel " + 16 + "=" + cel16);*/
-        //Log.i(TAG, "Percentage: "+ percentage + "%");
-
+        this.CellenCommand_ready = true;
     }
 
-    @Override
+    @Override // android.app.Service
     public IBinder onBind(Intent intent) {
-        return mBinder;
+        return this.mBinder;
     }
 
-    @Override
+    @Override // android.app.Service
     public boolean onUnbind(Intent intent) {
-        // After using a given device, you should make sure that BluetoothGatt.close() is called
-        // such that resources are cleaned up properly.  In this particular example, close() is
-        // invoked when the UI is disconnected from the Service.
         close();
         return super.onUnbind(intent);
     }
 
-    private final IBinder mBinder = new LocalBinder();
-
-    /**
-     * Initializes a reference to the local Bluetooth adapter.
-     *
-     * @return Return true if the initialization is successful.
-     */
     public boolean initialize() {
-        // For API level 18 and above, get a reference to BluetoothAdapter through
-        // BluetoothManager.
-        if (mBluetoothManager == null) {
-            mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-            if (mBluetoothManager == null) {
+        if (this.mBluetoothManager == null) {
+            BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+            this.mBluetoothManager = bluetoothManager;
+            if (bluetoothManager == null) {
                 Log.e(TAG, "Unable to initialize BluetoothManager.");
                 return false;
             }
         }
-
-        mBluetoothAdapter = mBluetoothManager.getAdapter();
-        if (mBluetoothAdapter == null) {
-            Log.e(TAG, "Unable to obtain a BluetoothAdapter.");
-            return false;
+        BluetoothAdapter adapter = this.mBluetoothManager.getAdapter();
+        this.mBluetoothAdapter = adapter;
+        if (adapter != null) {
+            return true;
         }
-
-        return true;
+        Log.e(TAG, "Unable to obtain a BluetoothAdapter.");
+        return false;
     }
 
-    /**
-     * Connects to the GATT server hosted on the Bluetooth LE device.
-     *
-     * @param address The device address of the destination device.
-     *
-     * @return Return true if the connection is initiated successfully. The connection result
-     *         is reported asynchronously through the
-     *         {@code BluetoothGattCallback#onConnectionStateChange(android.bluetooth.BluetoothGatt, int, int)}
-     *         callback.
-     */
-    public boolean connect(final String address) {
-        if (mBluetoothAdapter == null) {
-            Log.w(TAG, "mBluetoothAdapter is null.");
-        }
-        if (address == null) {
-            Log.w(TAG, "Device address is null.");
-        }
-        if (mBluetoothAdapter == null || address == null) {
+    public boolean connect(String str) {
+        if (this.mBluetoothAdapter == null || str == null) {
             Log.w(TAG, "BluetoothAdapter not initialized or unspecified address.");
             return false;
         }
-
-        // Previously connected device.  Try to reconnect.
-        if (mBluetoothDeviceAddress != null && address.equals(mBluetoothDeviceAddress)
-                && mBluetoothGatt != null) {
+        String str2 = this.mBluetoothDeviceAddress;
+        if (str2 != null && str.equals(str2) && this.mBluetoothGatt != null) {
             Log.d(TAG, "Trying to use an existing mBluetoothGatt for connection.");
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
                     ContextCompat.checkSelfPermission(BluetoothLeService.this, Manifest.permission.BLUETOOTH_CONNECT)
                             != PackageManager.PERMISSION_GRANTED) {
 
-                Log.w(TAG, "Missing BLUETOOTH_CONNECT permission");
+                Log.w(TAG, "Missing BLUETOOTH_CONNECT permission; skipping service discovery.");
                 // Optional: notify the Activity to recheck permissions
                 return false;
             }
-            if (mBluetoothGatt.connect()) {
-                mConnectionState = STATE_CONNECTING;
+            if (this.mBluetoothGatt.connect()) {
+                this.mConnectionState = 1;
                 return true;
-            } else {
-                final BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
-                mBluetoothGatt = device.connectGatt(this, false, mGattCallback);
-                mBluetoothDeviceAddress = address;
-                return false;
             }
-        }
 
-        final BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
-        if (device == null) {
+            this.mBluetoothGatt = this.mBluetoothAdapter.getRemoteDevice(str).connectGatt(this, false, this.mGattCallback);
+            this.mBluetoothDeviceAddress = str;
+            return false;
+        }
+        BluetoothDevice remoteDevice = this.mBluetoothAdapter.getRemoteDevice(str);
+        if (remoteDevice == null) {
             Log.w(TAG, "Device not found.  Unable to connect.");
             return false;
         }
-        // We want to directly connect to the device, so we are setting the autoConnect
-        // parameter to false.
-        mBluetoothGatt = device.connectGatt(this, false, mGattCallback);
+        this.mBluetoothGatt = remoteDevice.connectGatt(this, false, this.mGattCallback);
         Log.d(TAG, "Trying to create a new connection.");
-        mBluetoothDeviceAddress = address;
-        mConnectionState = STATE_CONNECTING;
+        this.mBluetoothDeviceAddress = str;
+        this.mConnectionState = 1;
         return true;
     }
 
-    /**
-     * Disconnects an existing connection or cancel a pending connection. The disconnection result
-     * is reported asynchronously through the
-     * {@code BluetoothGattCallback#onConnectionStateChange(android.bluetooth.BluetoothGatt, int, int)}
-     * callback.
-     */
     public void disconnect() {
-        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
+        BluetoothGatt bluetoothGatt;
+        if (this.mBluetoothAdapter == null || (bluetoothGatt = this.mBluetoothGatt) == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
-            return;
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
-                ContextCompat.checkSelfPermission(BluetoothLeService.this, Manifest.permission.BLUETOOTH_CONNECT)
-                        != PackageManager.PERMISSION_GRANTED) {
+        } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+                    ContextCompat.checkSelfPermission(BluetoothLeService.this, Manifest.permission.BLUETOOTH_CONNECT)
+                            != PackageManager.PERMISSION_GRANTED) {
 
-            Log.w(TAG, "Missing BLUETOOTH_CONNECT permission");
-            // Optional: notify the Activity to recheck permissions
-            return;
+                Log.w(TAG, "Missing BLUETOOTH_CONNECT permission; skipping service discovery.");
+                // Optional: notify the Activity to recheck permissions
+                return;
+            }
+            bluetoothGatt.disconnect();
         }
-        mBluetoothGatt.disconnect();
     }
 
-    /**
-     * After using a given BLE device, the app must call this method to ensure resources are
-     * released properly.
-     */
     public void close() {
-        if (mBluetoothGatt == null) {
+        BluetoothGatt bluetoothGatt = this.mBluetoothGatt;
+        if (bluetoothGatt == null) {
             return;
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
                 ContextCompat.checkSelfPermission(BluetoothLeService.this, Manifest.permission.BLUETOOTH_CONNECT)
                         != PackageManager.PERMISSION_GRANTED) {
 
-            Log.w(TAG, "Missing BLUETOOTH_CONNECT permission");
+            Log.w(TAG, "Missing BLUETOOTH_CONNECT permission; skipping service discovery.");
             // Optional: notify the Activity to recheck permissions
             return;
         }
-        mBluetoothGatt.close();
-        mBluetoothGatt = null;
+        bluetoothGatt.close();
+        this.mBluetoothGatt = null;
     }
 
-    /**
-     * Request a read on a given {@code BluetoothGattCharacteristic}. The read result is reported
-     * asynchronously through the {@code BluetoothGattCallback#onCharacteristicRead(android.bluetooth.BluetoothGatt, android.bluetooth.BluetoothGattCharacteristic, int)}
-     * callback.
-     *
-     * @param characteristic The characteristic to read from.
-     */
-    public void readCharacteristic(BluetoothGattCharacteristic characteristic) {
-        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
+    public void readCharacteristic(BluetoothGattCharacteristic bluetoothGattCharacteristic) {
+        BluetoothGatt bluetoothGatt;
+        if (this.mBluetoothAdapter == null || (bluetoothGatt = this.mBluetoothGatt) == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
             return;
         }
@@ -687,67 +528,53 @@ public class BluetoothLeService extends Service {
                 ContextCompat.checkSelfPermission(BluetoothLeService.this, Manifest.permission.BLUETOOTH_CONNECT)
                         != PackageManager.PERMISSION_GRANTED) {
 
-            Log.w(TAG, "Missing BLUETOOTH_CONNECT permission");
+            Log.w(TAG, "Missing BLUETOOTH_CONNECT permission; skipping service discovery.");
             // Optional: notify the Activity to recheck permissions
             return;
         }
-        mBluetoothGatt.readCharacteristic(characteristic);
-        Log.i(TAG, "characteristic" + characteristic);
+        bluetoothGatt.readCharacteristic(bluetoothGattCharacteristic);
+        Log.i(TAG, "characteristic" + bluetoothGattCharacteristic);
     }
 
-    /**
-     * Write to a given char
-     * @param characteristic The characteristic to write to
-     */
-    public void writeCharacteristic(BluetoothGattCharacteristic characteristic) {
-        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
+    public void writeCharacteristic(BluetoothGattCharacteristic bluetoothGattCharacteristic) {
+        BluetoothGatt bluetoothGatt;
+        if (this.mBluetoothAdapter == null || (bluetoothGatt = this.mBluetoothGatt) == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
-            return;
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
-                ContextCompat.checkSelfPermission(BluetoothLeService.this, Manifest.permission.BLUETOOTH_CONNECT)
-                        != PackageManager.PERMISSION_GRANTED) {
+        } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+                    ContextCompat.checkSelfPermission(BluetoothLeService.this, Manifest.permission.BLUETOOTH_CONNECT)
+                            != PackageManager.PERMISSION_GRANTED) {
 
-            Log.w(TAG, "Missing BLUETOOTH_CONNECT permission");
-            // Optional: notify the Activity to recheck permissions
-            return;
+                Log.w(TAG, "Missing BLUETOOTH_CONNECT permission; skipping service discovery.");
+                // Optional: notify the Activity to recheck permissions
+                return;
+            }
+            bluetoothGatt.writeCharacteristic(bluetoothGattCharacteristic);
         }
-        mBluetoothGatt.writeCharacteristic(characteristic);
     }
 
-    /**
-     * Enables or disables notification on a give characteristic.
-     *
-     * @param characteristic Characteristic to act on.
-     * @param enabled If true, enable notification.  False otherwise.
-     */
-    public void setCharacteristicNotification(BluetoothGattCharacteristic characteristic,
-                                              boolean enabled) {
-        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
+    public void setCharacteristicNotification(BluetoothGattCharacteristic bluetoothGattCharacteristic, boolean z) {
+        BluetoothGatt bluetoothGatt;
+        if (this.mBluetoothAdapter == null || (bluetoothGatt = this.mBluetoothGatt) == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
-            return;
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
-                ContextCompat.checkSelfPermission(BluetoothLeService.this, Manifest.permission.BLUETOOTH_CONNECT)
-                        != PackageManager.PERMISSION_GRANTED) {
+        } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+                    ContextCompat.checkSelfPermission(BluetoothLeService.this, Manifest.permission.BLUETOOTH_CONNECT)
+                            != PackageManager.PERMISSION_GRANTED) {
 
-            Log.w(TAG, "Missing BLUETOOTH_CONNECT permission");
-            // Optional: notify the Activity to recheck permissions
-            return;
+                Log.w(TAG, "Missing BLUETOOTH_CONNECT permission; skipping service discovery.");
+                // Optional: notify the Activity to recheck permissions
+                return;
+            }
+            bluetoothGatt.setCharacteristicNotification(bluetoothGattCharacteristic, z);
         }
-        mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
-
     }
 
-    /**
-     * Retrieves a list of supported GATT services on the connected device. This should be
-     * invoked only after {@code BluetoothGatt#discoverServices()} completes successfully.
-     *
-     * @return A {@code List} of supported services.
-     */
     public List<BluetoothGattService> getSupportedGattServices() {
-        if (mBluetoothGatt == null) return null;
-
-        return mBluetoothGatt.getServices();
+        BluetoothGatt bluetoothGatt = this.mBluetoothGatt;
+        if (bluetoothGatt == null) {
+            return null;
+        }
+        return bluetoothGatt.getServices();
     }
 }
