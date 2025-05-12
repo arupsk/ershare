@@ -1,17 +1,8 @@
 package com.Andriod.ER.com;
 
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowCompat;
-import androidx.core.view.WindowInsetsCompat;
-
-import android.Manifest;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
@@ -22,7 +13,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Build;
@@ -30,1024 +20,613 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.internal.view.SupportMenu;
 import com.Andriod.ER.R;
-
+import com.Andriod.ER.com.BluetoothLeService;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
-import static android.app.AlertDialog.*;
-
-@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
+/* loaded from: classes.dex */
 public class MainActivity extends AppCompatActivity {
-    private final static String TAG = MainActivity.class.getSimpleName();
-    private Transmission Tx;
-
-    public boolean busy = false;
-    public  byte ReadCommand[]  = {(byte) 221, (byte) 165, (byte) 3, (byte) 0, (byte) 255, (byte) 253, (byte) 119, (byte) 13, (byte) 10};
-    public  byte LockCommand[]  = {(byte) 0xDD, (byte) 0x5A, (byte) 0xE1, (byte) 0x2, (byte) 0x0, (byte) 0x2, (byte) 0xFF, (byte) 0x1B, (byte) 0x77,};
-    public  byte UnlockCommand[]  = {(byte) 0xDD, (byte) 0x5A, (byte) 0xE1, (byte) 0x2, (byte) 0x0, (byte) 0x0, (byte) 0xFF, (byte) 0x1D, (byte) 0x77,};
-
-    public  byte CellenReadCommand[]  = {(byte) 221, (byte) 165, (byte) 4, (byte) 0, (byte) 255, (byte) 252, (byte) 119, (byte) 13, (byte) 10};
-    public  byte HistoryReadCommand[]  = {(byte) 0xdd, (byte) 0xaa,  (byte) 0x77};
-
-    public  byte fabriekMode[]  = {(byte) 0xDD, (byte) 0x5A, (byte) 0x0, (byte) 0x2, (byte) 0x56, (byte) 0x78, (byte) 0xFF, (byte) 0x30, (byte) 0x77,};
-
-    public  byte OUTfabriekMode_read[]  = {(byte) 0xDD, (byte) 0x5A, (byte) 0x01, (byte) 0x2, (byte) 0x0, (byte) 0x0, (byte) 0xFF, (byte) 0xFD, (byte) 0x77,};
-
-    public  byte OUTfabriekMode[]  = {(byte) 0xDD, (byte) 0x5A, (byte) 0x01, (byte) 0x2, (byte) 0x28, (byte) 0x28, (byte) 0xFF, (byte) 0xAD, (byte) 0x77,};
-
-
-    public int Pas_Zero[] = {1, 2, 3, 4, 5, 6};
-
-    public boolean packegeReady = false;
-    public boolean cellenready = false;
-
-    public static final String EXTRAS_DEVICE_NAME = "DEVICE_NAME";
+    private static final int BACKGROUND_LOCATION_PERMISSION_CODE = 125;
+    private static final String CHANNEL_DEFAULT_IMPORTANCE = "0xffffffff";
     public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
-
-    private static final int REQUEST_BLUETOOTH_CONNECT = 1003;  // This can be any integer value
-
-    private String mDeviceName;
-    private String mDeviceAddress;
-    //  private ExpandableListView mGattServicesList;
-    private BluetoothLeService mBluetoothLeService;
-    private HistoryActivity History;
-    public static boolean mConnected = false;
-    public static boolean FinalMconected = false;
-    public static boolean FinalMconected2 = false;
-
-    private static final int STATE_DISCONNECTED = 0;
-    private static final int STATE_CONNECTING = 1;
+    public static final String EXTRAS_DEVICE_NAME = "DEVICE_NAME";
+    private static final int LOCATION_PERMISSION_CODE = 126;
+    private static final int MY_PERMISSIONS_REQUEST_CODE = 123;
+    private static final int MY_PERMISSIONS_REQUEST_CODE_Scan_Connect = 124;
     private static final int STATE_CONNECTED = 2;
+    private static final int STATE_CONNECTING = 1;
+    private static final int STATE_DISCONNECTED = 0;
+    public TextView BatteryNum;
+    JSONObject Languages;
+    public TextView Warning;
+    String accessToBluetoothAndLocationAreRequired;
+    String addBattery;
+    private FloatingActionButton addBatteryBtn;
+    ArrayAdapter<String> arrayAdapter;
+    ArrayAdapter<String> arrayAdapterBatteries;
+    String bluetoothNotSupported;
+    String cancel;
+    private Button changeLanBtn;
+    String changeLanguage;
+    String changePassword;
+    private BluetoothGattCharacteristic characteristicRX;
+    private BluetoothGattCharacteristic characteristicTX;
+    long count;
+    public TextView current;
+    private JSONArray data;
+    String locationPermissionDenied;
+    String locationPermissionGranted;
+    public ImageButton lockButton;
+    String logout;
+    private FloatingActionButton logoutBtn;
+    private BluetoothAdapter mBluetoothAdapter;
+    private BluetoothLeService mBluetoothLeService;
+    private Button mBtnDoTask;
+    private String mDeviceAddress;
+    private String mDeviceName;
+    private ProgressBar mProgressBar;
+    private ProgressDialog mProgressDialog;
+    NavigationView navigationView;
+    String ok;
+    public TextView percent;
+    String pleaseGrantThosePermissions;
+    String scanConnectPermissionDenied;
+    String scanConnectPermissionGranted;
+    String selectOneLanguage;
+    TextView switchBtnOn_txtView;
+    TextView switchBtnoff_txtView;
+    public TextView temp;
+    public TextView time;
+    private TextView toggleSwitch;
+    String viewBatteries;
+    public TextView voltage;
+    String yourSelectedLanguageIs;
+    private static final String TAG = MainActivity.class.getSimpleName();
+    private static boolean mConnected = false;
+    private static boolean FinalMconected = false;
+    private static boolean FinalMconected2 = false;
+    public boolean busy = false;
+    public byte[] ReadCommand = {-35, -91, 3, 0, -1, -3, 119, 13, 10};
+    public byte[] LockCommand = {-35, 90, -31, 2, 0, 2, -1, 27, 119};
+    public byte[] UnlockCommand = {-35, 90, -31, 2, 0, 0, -1, 29, 119};
+    public byte[] CellenReadCommand = {-35, -91, 4, 0, -1, -4, 119, 13, 10};
+    public byte[] HistoryReadCommand = {-35, -86, 119};
+    public byte[] fabriekMode = {-35, 90, 0, 2, 86, 120, -1, 48, 119};
+    public byte[] OUTfabriekMode_read = {-35, 90, 1, 2, 0, 0, -1, -3, 119};
+    public byte[] OUTfabriekMode = {-35, 90, 1, 2, 40, 40, -1, -83, 119};
+    public byte[] ASK_UV = {-35, -91, 38, 0, -1, -38, 119};
+    public UUID myisscRxUUID = UUID.fromString("0000ff01-0000-1000-8000-00805f9b34fb");
+    public UUID myisscTxUUID = UUID.fromString("0000ff02-0000-1000-8000-00805f9b34fb");
+    public UUID myisscServiceUUID = UUID.fromString("0000ff00-0000-1000-8000-00805f9b34fb");
+    int MY_PERMISSIONS_REQUEST_LOCATION = 99;
+    public String Warning_String = "";
+    public Boolean calibraiton_checked = false;
+    public int counter_calibraiton_checked = 0;
+    public float Call_UV_save = 3.175f;
+    public float Call_UV_r_save = 3.25f;
+    public float Call_UV_reserve = 2.85f;
+    public float Call_UV_r_reserve = 3.15f;
+    public float Call_UV_boost = 2.65f;
+    public float Call_UV_r_boost = 3.25f;
+    public float Cell_UV = 0.0f;
+    public float Cell_UV_r = 0.0f;
+    public int periodic_calibraiton_check = 0;
+    String myBatteries = "";
+    public BatteryNames[] BatteryList_2 = new BatteryNames[10];
+    int NumMyBatteries = 0;
+    private final ServiceConnection mServiceConnection = new ServiceConnection() { // from class: com.Andriod.ER.com.MainActivity.1
+        @Override // android.content.ServiceConnection
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            MainActivity.this.mBluetoothLeService = ((BluetoothLeService.LocalBinder) iBinder).getService();
+            if (!MainActivity.this.mBluetoothLeService.initialize()) {
+                Log.e(MainActivity.TAG, "Unable to initialize Bluetooth");
+                MainActivity.this.finish();
+            }
+            MainActivity.this.mBluetoothLeService.connect(MainActivity.this.mDeviceAddress);
+        }
 
+        @Override // android.content.ServiceConnection
+        public void onServiceDisconnected(ComponentName componentName) {
+            MainActivity.this.mBluetoothLeService = null;
+        }
+    };
+    private final BroadcastReceiver mGattUpdateReceiver = new BroadcastReceiver() { // from class: com.Andriod.ER.com.MainActivity.2
+        @Override // android.content.BroadcastReceiver
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (BluetoothLeService.ACTION_GATT_CONNECTED.equals(action)) {
+                boolean unused = MainActivity.mConnected = true;
+                MainActivity mainActivity = MainActivity.this;
+                mainActivity.mProgressDialog = ProgressDialog.show(mainActivity, "Connecting! ", "Please wait...", false, false);
+                Log.i(MainActivity.TAG, "mConnected = true; ");
+                return;
+            }
+            if ("android.bluetooth.device.action.ACL_CONNECTED".equals(action)) {
+                boolean unused2 = MainActivity.FinalMconected2 = true;
+                Log.i(MainActivity.TAG, "FinalMconected2 = true; ");
+                return;
+            }
+            if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
+                boolean unused3 = MainActivity.mConnected = false;
+                boolean unused4 = MainActivity.FinalMconected = false;
+                boolean unused5 = MainActivity.FinalMconected2 = false;
+                Log.i(MainActivity.TAG, "mConnected = false; ");
+                return;
+            }
+            if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action) && MainActivity.mConnected) {
+                MainActivity mainActivity2 = MainActivity.this;
+                mainActivity2.displayGattServices(mainActivity2.mBluetoothLeService.getSupportedGattServices());
+            }
+        }
+    };
 
     public static boolean getConnectie() {
         return mConnected;
     }
 
-    public int command = 0;
-    private boolean ReadyToUnkink = false;
-    public boolean Boolforground = true;
-    public BluetoothGattCharacteristic characteristicTX;
-    public BluetoothGattCharacteristic characteristicRX;
-    public UUID myisscRxUUID = UUID.fromString("0000ff01-0000-1000-8000-00805f9b34fb");
-    public UUID myisscTxUUID = UUID.fromString("0000ff02-0000-1000-8000-00805f9b34fb");
-    public UUID myisscServiceUUID = UUID.fromString("0000ff00-0000-1000-8000-00805f9b34fb");
-    public TextView percent;
-    public TextView voltage;
-    public TextView current;
-    public TextView time;
-    public TextView temp;
-    public TextView BatteryNum;
-    private ProgressBar mProgressBar;
-    private BluetoothAdapter mBluetoothAdapter;
-    int MY_PERMISSIONS_REQUEST_LOCATION = 99;
-    private static final String CHANNEL_DEFAULT_IMPORTANCE = "0xffffffff" ;
-    public ImageButton lockButton;
-    private static final int MY_PERMISSIONS_REQUEST_CODE = 123;
-    private static final int MY_PERMISSIONS_REQUEST_CODE_Scan_Connect = 124;
+    public class BatteryNames {
+        String deviceName;
 
-    public TextView V_cell, V_pack, OC, OT, Error;
+        public BatteryNames() {
+        }
+    }
 
-
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void Refresh(View view) throws InterruptedException {
-        // Do something in response to button
-        // Get the Intent that started this activity and extract the string
-
-        //*     finding the interface Textview s    */
-
-        // encodeHexString(Match_Password(getRandomNumberNumber()));
-        encodeHexString(Tx.Match_Password(Tx.Pas_Zero));
-        encodeHexString(Tx.Change_Password(Tx.Pas_Zero, new int[]{1, 2, 3, 4, 5, 6}));
-
-
-        if (mConnected == true) {
-
-            // TimeUnit.MILLISECONDS.sleep(200);
-            sendDataToBLE(ReadCommand);
-            TimeUnit.MILLISECONDS.sleep(500);
-            sendDataToBLE(CellenReadCommand);
-            TimeUnit.MILLISECONDS.sleep(200);
+        if (mConnected) {
+            sendDataToBLE(this.ReadCommand);
+            TimeUnit.MILLISECONDS.sleep(500L);
+            sendDataToBLE(this.CellenReadCommand);
+            TimeUnit.MILLISECONDS.sleep(200L);
             WorkInterface();
-
-            //Calibration Test:
-           /*busy = true;
-            sendDataToBLE(fabriekMode);
-            TimeUnit.MILLISECONDS.sleep(500);
-            Calibrate((int)(Call_UV_save*1000), (byte) 0x26);   //UNDERVOLTAGE 2.65V
-            TimeUnit.MILLISECONDS.sleep(500);
-            sendDataToBLE(OUTfabriekMode);
-            busy = false;*/
-            // Calibrate_Safe_Mode();
-
-
-
-        } else {
-            if (mBluetoothLeService.mConnectionState == STATE_DISCONNECTED) {
-                Openscan();
-            }
-        }
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.S_V2) {
-            BatteryNum.setText("ER34765019126");
-            percent.setText("64%");
-            voltage.setText("13.2V");
-            current.setText("0A");
-            time.setText("0h");
-            temp.setText("19°C");
-            mProgressBar.setProgressTintList(ColorStateList.valueOf(Color.GREEN));
-            mProgressBar.setProgress((int) 64);
-        }
-
-        //simulation mode
-      /* BatteryNum.setText("ER2019546520");
-        percent.setText("55.5%");
-        voltage.setText("33.5V");
-        current.setText("-50.0A");
-        time.setText("1.2h");
-        temp.setText("20.9°C");
-        mProgressBar.setProgressTintList(ColorStateList.valueOf(Color.GREEN));
-        mProgressBar.setProgress((int) 55.5);*/
-    }
-
-
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public void Lock(View view) throws InterruptedException {
-        if (mConnected == true) {
-
-            if(mBluetoothLeService.lockData == 0) {
-                TimeUnit.SECONDS.sleep(1);
-                sendDataToBLE(LockCommand);
-                TimeUnit.SECONDS.sleep(1);
-            }
-            else
-            {
-                TimeUnit.SECONDS.sleep(1);
-                sendDataToBLE(UnlockCommand);
-                TimeUnit.SECONDS.sleep(1);
-            }
-
-            WorkInterface();
-        }
-    }
-
-    private void disconnect_BLE()
-    {
-
-        if (mBluetoothAdapter == null || mBluetoothLeService == null) {
-            Log.w(TAG, "BluetoothAdapter not initialized");
             return;
         }
-        mBluetoothLeService.disconnect();
-        mBluetoothLeService.close();
-        mConnected = false;
-        FinalMconected = false;
-        characteristicTX = null;
-
-        ClearInterface();
-
-
-
-    }
-
-    //    public void Refresh(View view) throws InterruptedException {
-    public void log_out(View view)
-    {
-        Intent i = new Intent(MainActivity.this, LogIn.class);
-        startActivity(i);
-
-    }
-    public void Inform_Warning(View view) {
-        if(mBluetoothLeService.SOV == 1)
-        {
-            Toast.makeText(this, "Single overvoltage protection.. Stop charging the battery!", Toast.LENGTH_LONG).show();
-        }
-        if(mBluetoothLeService.SUV == 1)
-        {
-            Toast.makeText(this, "Single undervoltage protection.. Pleas charge the battery!", Toast.LENGTH_LONG).show();
-        }
-        if(mBluetoothLeService.POV == 1)
-        {
-            Toast.makeText(this, "Pack overvoltage protection.. Stop charging the battery!", Toast.LENGTH_LONG).show();
-        }
-        if(mBluetoothLeService.PUV == 1)
-        {
-            Toast.makeText(this, "Pack undervoltage protection.. Pleas charge the battery!", Toast.LENGTH_LONG).show();
-        }
-        if(mBluetoothLeService.COT == 1)
-        {
-            Toast.makeText(this, "(Charge) over temperature protection! .. Battery to HOT!", Toast.LENGTH_LONG).show();
-        }
-        if(mBluetoothLeService.CUT == 1)
-        {
-            Toast.makeText(this, "(Charge) under temperature protection! .. Battery to Cold!", Toast.LENGTH_LONG).show();
-        }
-        if(mBluetoothLeService.DOT == 1)
-        {
-            Toast.makeText(this, "(discharge) over temperature protection! .. Battery to HOT!", Toast.LENGTH_LONG).show();
-        }
-        if(mBluetoothLeService.DUT == 1)
-        {
-            Toast.makeText(this, "(discharge) under temperature protection! .. Battery to Cold!", Toast.LENGTH_LONG).show();
-        }
-        if(mBluetoothLeService.COC == 1)
-        {
-            Toast.makeText(this, "(charge)  over current protection!", Toast.LENGTH_LONG).show();
-        }
-        if(mBluetoothLeService.DOC == 1)
-        {
-            Toast.makeText(this, "(discharge)  over current protection!", Toast.LENGTH_LONG).show();
-        }
-        if(mBluetoothLeService.SC == 1)
-        {
-            Toast.makeText(this, "Short circuit protection (check your wire)!", Toast.LENGTH_LONG).show();
-        }
-        if(mBluetoothLeService.IC_Error == 1)
-        {
-            Toast.makeText(this, "Internal Error!", Toast.LENGTH_LONG).show();
-        }
-
-
-    }
-    public void Link(View view) {
-
-
-        if (mConnected == true)
-        {
-
-            disconnect_BLE();
-
-            if(mBluetoothLeService.mConnectionState == STATE_DISCONNECTED ) {
-                Openscan();
-            }
-        }
-        else {
+        if (this.mBluetoothLeService.mConnectionState == 0) {
             Openscan();
         }
     }
 
-    public void UnLink(View view) {
-        if (mConnected == true)
-        {
-            disconnect_BLE();
+    public void Lock(View view) throws InterruptedException {
+        if (mConnected) {
+            this.busy = true;
+            if (this.mBluetoothLeService.lockData == 0.0f) {
+                TimeUnit.SECONDS.sleep(1L);
+                sendDataToBLE(this.LockCommand);
+                TimeUnit.SECONDS.sleep(1L);
+            } else {
+                TimeUnit.SECONDS.sleep(1L);
+                sendDataToBLE(this.UnlockCommand);
+                TimeUnit.SECONDS.sleep(1L);
+            }
+            this.busy = false;
+            WorkInterface();
         }
+    }
+
+    private void disconnect_BLE() {
+        BluetoothLeService bluetoothLeService;
+        if (this.mBluetoothAdapter == null || (bluetoothLeService = this.mBluetoothLeService) == null) {
+            Log.w(TAG, "BluetoothAdapter not initialized");
+            return;
+        }
+        bluetoothLeService.disconnect();
+        this.mBluetoothLeService.close();
+        mConnected = false;
+        FinalMconected = false;
+        this.characteristicTX = null;
         ClearInterface();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public void History(View view) throws InterruptedException {
-        if (mConnected == true)
-        {
-
-            TimeUnit.SECONDS.sleep(1);
-            sendDataToBLE(HistoryReadCommand);
-            TimeUnit.SECONDS.sleep(1);
+    public void Func_inform_Warning() {
+        this.Warning.setVisibility(View.INVISIBLE);
+        this.Warning_String = "";
+        if (this.mBluetoothLeService.SOV == 1) {
+            this.Warning_String += "Battery is fully charged, please stop the charge? \n";
+            this.Warning.setVisibility(View.VISIBLE);
         }
-
-        final Intent intent = new Intent(this, HistoryActivity.class);
-        startActivity(intent);
-
-
-        // else{
-        //     Openscan();
-        // }
-
-
+        if (this.mBluetoothLeService.SUV == 1) {
+            this.Warning_String += "Battery is fully discharged, please stop the use and start your charge as soon as possible? \n";
+            this.Warning.setVisibility(View.VISIBLE);
+        }
+        if (this.mBluetoothLeService.POV == 1) {
+            this.Warning_String += "Battery is fully charged, please stop the charge? \n";
+            this.Warning.setVisibility(View.VISIBLE);
+        }
+        if (this.mBluetoothLeService.PUV == 1) {
+            this.Warning_String += "Battery is fully discharged, please stop the use and start your charge as soon as possible? \n";
+            this.Warning.setVisibility(android.view.View.VISIBLE);
+        }
+        if (this.mBluetoothLeService.COT == 1) {
+            this.Warning_String += "Please stop charge? Battery is overheating! \n";
+            this.Warning.setVisibility(android.view.View.VISIBLE);
+        }
+        if (this.mBluetoothLeService.CUT == 1) {
+            this.Warning_String += "Please warm up the battery so it can safely charge because the battery is to Cold! \n";
+            this.Warning.setVisibility(android.view.View.VISIBLE);
+        }
+        if (this.mBluetoothLeService.DOT == 1) {
+            this.Warning_String += "Please stop charge? Battery is overheating! \n";
+            this.Warning.setVisibility(View.VISIBLE);
+        }
+        if (this.mBluetoothLeService.DUT == 1) {
+            this.Warning_String += "Please warm up the battery so it can safely charge because the battery is to Cold! \n";
+            this.Warning.setVisibility(View.VISIBLE);
+        }
+        if (this.mBluetoothLeService.COC == 1) {
+            this.Warning_String += "Please lower the amount of amps you are currently charging with to max 40Amp \n";
+            this.Warning.setVisibility(android.view.View.VISIBLE);
+        }
+        if (this.mBluetoothLeService.DOC == 1) {
+            this.Warning_String += "Please lower the amount of amps you are currently discharging? \n";
+            this.Warning.setVisibility(android.view.View.VISIBLE);
+        }
+        if (this.mBluetoothLeService.SC == 1) {
+            this.Warning_String += "Short circuit protection, disconnect and check your wiring! \n";
+            this.Warning.setVisibility(android.view.View.VISIBLE);
+        }
+        if (this.mBluetoothLeService.IC_Error == 1) {
+            this.Warning_String += "Internal Error! Please contact your supplier! \n";
+            this.Warning.setVisibility(View.VISIBLE);
+        }
+        if (this.mBluetoothLeService.volts < this.mBluetoothLeService.AantalCellen * this.Call_UV_r_save && this.mBluetoothLeService.Ramps < 1.0f) {
+            this.Warning_String += "Please remember to charge your battery to 100%! \n";
+            this.Warning.setVisibility(View.VISIBLE);
+        }
+        this.Warning.setText(this.Warning_String);
     }
 
-    public void Openscan(){
-        final Intent intent = new Intent(this, DeviceScanActivity.class);
-        startActivity(intent);
+    public void Proaction_state_func(View view) {
+        if (mConnected) {
+            Bundle bundle = new Bundle();
+            bundle.putIntArray("protection_state", new int[]{this.mBluetoothLeService.SOV, this.mBluetoothLeService.SUV, this.mBluetoothLeService.POV, this.mBluetoothLeService.PUV, this.mBluetoothLeService.COT, this.mBluetoothLeService.CUT, this.mBluetoothLeService.DOT, this.mBluetoothLeService.DUT, this.mBluetoothLeService.COC, this.mBluetoothLeService.DOC, this.mBluetoothLeService.SC, this.mBluetoothLeService.IC_Error});
+            Protaction_Activity protaction_Activity = new Protaction_Activity();
+            protaction_Activity.setArguments(bundle);
+            protaction_Activity.show(getSupportFragmentManager(), "Protection State");
+        }
     }
 
-    public void startGround(){
+    public void Link(View view) {
+        if (mConnected) {
+            disconnect_BLE();
+            if (this.mBluetoothLeService.mConnectionState == 0) {
+                Openscan();
+                return;
+            }
+            return;
+        }
+        Openscan();
+    }
+
+    public void UnLink(View view) {
+        if (mConnected) {
+            disconnect_BLE();
+        }
+    }
+
+    public void Openscan() {
+        startActivity(new Intent(this, (Class<?>) DeviceScanActivity.class));
+    }
+
+    public void startGround() {
         Log.i(TAG, "Functie startGround..");
-
-        final Intent intent = new Intent(this, ForegroundService.class);
-        ContextCompat.startForegroundService(this, intent);
-        // Should we show an explanation?
-        // Here, thisActivity is the current activity
+        startService(new Intent(this, (Class<?>) ForegroundService.class));
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public void WorkInterface(){
-        /*TextView percent = findViewById(R.id.Percentage);
-        TextView voltage = findViewById(R.id.Voltage);
-        TextView current = findViewById(R.id.Current);
-        TextView time = findViewById(R.id.Time);
-        TextView temp = findViewById(R.id.Temperature);
-        TextView BatteryNum = findViewById(R.id.BatteryNo);
-*/
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.S_V2) {
-            BatteryNum.setText("ER34765019126");
-            percent.setText("64%");
-            voltage.setText("13.2V");
-            current.setText("0A");
-            time.setText("0h");
-            temp.setText("19°C");
-            mProgressBar.setProgressTintList(ColorStateList.valueOf(Color.GREEN));
-            mProgressBar.setProgress((int) 64);
+    public void WorkInterface() {
+        if (this.busy) {
+            return;
         }
-        else {
-            BatteryNum.setText(mDeviceName);
-            percent.setText(String.valueOf(new DecimalFormat("##.#").format(mBluetoothLeService.percentage) + "%"));
-            voltage.setText(String.valueOf(new DecimalFormat("##.#").format(mBluetoothLeService.volts) + "V"));
-            current.setText(String.valueOf(new DecimalFormat("##.#").format(mBluetoothLeService.Ramps) + "A"));
-            time.setText(String.valueOf(new DecimalFormat("##.#").format(mBluetoothLeService.time) + "h"));
-            temp.setText(String.valueOf(new DecimalFormat("##.#").format(mBluetoothLeService.temp1) + "°C"));
-            mProgressBar.setProgress((int) mBluetoothLeService.percentage);
+        this.mProgressDialog.dismiss();
+        this.BatteryNum.setText(this.mDeviceName);
+        if (this.mBluetoothLeService.ReadComand_ready) {
+            this.percent.setText(String.valueOf(new DecimalFormat("##.#").format(this.mBluetoothLeService.percentage) + "%"));
+            this.voltage.setText(String.valueOf(new DecimalFormat("##.#").format((double) this.mBluetoothLeService.volts) + "V"));
+            this.current.setText(String.valueOf(new DecimalFormat("##.#").format((double) this.mBluetoothLeService.Ramps) + "A"));
+            this.time.setText(String.valueOf(new DecimalFormat("##.#").format((double) this.mBluetoothLeService.time) + "h"));
+            this.temp.setText(String.valueOf(new DecimalFormat("##.#").format((double) this.mBluetoothLeService.temp1) + "°C"));
+            this.mProgressBar.setProgress((int) this.mBluetoothLeService.percentage);
+            if (this.mBluetoothLeService.percentage <= 30.0f) {
+                this.mProgressBar.setProgressTintList(ColorStateList.valueOf(0xFFFF0000));
+            } else if (this.mBluetoothLeService.percentage > 30.0f && this.mBluetoothLeService.percentage < 40.0f) {
+                this.mProgressBar.setProgressTintList(ColorStateList.valueOf(Color.rgb(255, 165, 0)));
+            } else if (this.mBluetoothLeService.percentage >= 40.0f) {
+                this.mProgressBar.setProgressTintList(ColorStateList.valueOf(-16711936));
+            }
+            Func_inform_Warning();
+            if (this.mBluetoothLeService.lockData == 0.0f) {
+                this.lockButton.setImageResource(R.drawable.unlock_10);
+            } else if (this.mBluetoothLeService.lockData == 1.0f) {
+                this.lockButton.setImageResource(R.drawable.lock_11);
+            }
+            this.mBluetoothLeService.ReadComand_ready = false;
         }
-        if (mBluetoothLeService.percentage < 40)
-        {
-            mProgressBar.setProgressTintList(ColorStateList.valueOf(Color.RED));
-
-        }
-        else if (mBluetoothLeService.percentage > 40)
-        {
-            mProgressBar.setProgressTintList(ColorStateList.valueOf(Color.GREEN));
-
-        }
-
-        if(mBluetoothLeService.lockData == 0) {
-            lockButton.setImageResource(R.drawable.unlock_10);
-        }
-        else if((mBluetoothLeService.lockData == 1)) {
-            lockButton.setImageResource(R.drawable.lock_11);
-        }
-
-        /*if(mBluetoothLeService.SOV == 1)
-        {
-            V_cell.setVisibility(View.VISIBLE);
-            V_cell.setText("SOV");
-        }else{V_cell.setVisibility(View.INVISIBLE); }
-        if(mBluetoothLeService.SUV == 1)
-        {
-            V_cell.setVisibility(View.VISIBLE);
-            V_cell.setText("SUV");
-        }else{V_cell.setVisibility(View.INVISIBLE); }*/
-        if(mBluetoothLeService.POV == 1)
-        {
-            V_pack.setVisibility(View.VISIBLE);
-            V_pack.setText("POV");
-        }else{V_pack.setVisibility(View.INVISIBLE); }
-        if(mBluetoothLeService.PUV == 1)
-        {
-            V_pack.setVisibility(View.VISIBLE);
-            V_pack.setText("PUV");
-        }else{V_pack.setVisibility(View.INVISIBLE); }
-        if(mBluetoothLeService.COT == 1)
-        {
-            OT.setVisibility(View.VISIBLE);
-            OT.setText("COT");
-        }else{OT.setVisibility(View.INVISIBLE); }
-        if(mBluetoothLeService.CUT == 1)
-        {
-            OT.setVisibility(View.VISIBLE);
-            OT.setText("CUT");
-        }else{OT.setVisibility(View.INVISIBLE); }
-        if(mBluetoothLeService.DOT == 1)
-        {
-            OT.setVisibility(View.VISIBLE);
-            OT.setText("DOT");
-        }else{OT.setVisibility(View.INVISIBLE); }
-        if(mBluetoothLeService.DUT == 1)
-        {
-            OT.setVisibility(View.VISIBLE);
-            OT.setText("DUT");
-        }else{OT.setVisibility(View.INVISIBLE); }
-        if(mBluetoothLeService.COC == 1)
-        {
-            OC.setVisibility(View.VISIBLE);
-            OC.setText("COC");
-        }else{OC.setVisibility(View.INVISIBLE); }
-        if(mBluetoothLeService.DOC == 1)
-        {
-            OC.setVisibility(View.VISIBLE);
-            OC.setText("DOC");
-        }else{OC.setVisibility(View.INVISIBLE); }
-        if(mBluetoothLeService.SC == 1)
-        {
-            Error.setVisibility(View.VISIBLE);
-            Error.setText("SC");
-        }else{Error.setVisibility(View.INVISIBLE); }
-
-        if(mBluetoothLeService.IC_Error == 1)
-        {
-            Error.setVisibility(View.VISIBLE);
-            Error.setText("IC_Error");
-        }else{Error.setVisibility(View.INVISIBLE); }
-
-
-
-
-
-        mBluetoothLeService.DataReady = false;
+        this.mBluetoothLeService.DataReady = false;
     }
 
-
-    public void ClearInterface(){
-        /*TextView percent = findViewById(R.id.Percentage);
-        TextView voltage = findViewById(R.id.Voltage);
-        TextView current = findViewById(R.id.Current);
-        TextView time = findViewById(R.id.Time);
-        TextView temp = findViewById(R.id.Temperature);
-        TextView BatteryNum = findViewById(R.id.BatteryNo);*/
-
-        BatteryNum.setText("Energy-Research");
-        percent.setText("00.0%");
-        voltage.setText("00.0V");
-        current.setText("00.0A");
-        time.setText("00.0h");
-        temp.setText("00.0°C");
-        mProgressBar.setProgress((int) 0);
-      //  V_cell.setVisibility(View.INVISIBLE);
-        V_pack.setVisibility(View.INVISIBLE);
-        OT.setVisibility(View.INVISIBLE);
-        OC.setVisibility(View.INVISIBLE);
-        Error.setVisibility(View.INVISIBLE);
-
-
+    public void ClearInterface() {
+        this.Warning_String = "";
+        this.Warning.setVisibility(View.INVISIBLE);
+        this.BatteryNum.setText("Energy-Research");
+        this.percent.setText("00.0%");
+        this.voltage.setText("00.0V");
+        this.current.setText("00.0A");
+        this.time.setText("00.0h");
+        this.temp.setText("00.0°C");
+        this.mProgressBar.setProgress(0);
+        this.Warning.setVisibility(View.INVISIBLE);
     }
 
-    // Code to manage Service lifecycle.
-    private final ServiceConnection mServiceConnection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder service) {
-            mBluetoothLeService = ((BluetoothLeService.LocalBinder) service).getService();
-            if (!mBluetoothLeService.initialize()) {
-                Log.e(TAG, "Unable to initialize Bluetooth");
-                finish();
-            }
-            // Automatically connects to the device upon successful start-up initialization.
-            mBluetoothLeService.connect(mDeviceAddress);
+    private void checkPermission111() {
+        if (ContextCompat.checkSelfPermission(this, "android.permission.ACCESS_FINE_LOCATION") == 0) {
+            return;
         }
+        askForLocationPermission();
+    }
 
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-            mBluetoothLeService = null;
-        }
-    };
-
-    // Handles various events fired by the Service.
-    // ACTION_GATT_CONNECTED: connected to a GATT server.
-    // ACTION_GATT_DISCONNECTED: disconnected from a GATT server.
-    // ACTION_GATT_SERVICES_DISCOVERED: discovered GATT services.
-    // ACTION_DATA_AVAILABLE: received data from the device.  This can be a result of read
-    //                        or notification operations.
-    private final BroadcastReceiver mGattUpdateReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
-            if (BluetoothLeService.ACTION_GATT_CONNECTED.equals(action)) {
-                mConnected = true;
-                Log.i(TAG, "mConnected = true; ");
-
-                //updateConnectionState(R.string.connected);
-                // invalidateOptionsMenu();
+    private void askForLocationPermission() {
+        new AlertDialog.Builder(this).setTitle("Permission Needed!").setMessage("Location Permission needed to enable bluetooth scanning and connectivity features!, please tap \"While using this app\"").setPositiveButton("OK", new DialogInterface.OnClickListener() { // from class: com.Andriod.ER.com.MainActivity.4
+            @Override // android.content.DialogInterface.OnClickListener
+            public void onClick(DialogInterface dialogInterface, int i) {
+                ActivityCompat.requestPermissions(MainActivity.this, new String[]{"android.permission.ACCESS_FINE_LOCATION"}, 126);
             }
-            else if (BluetoothDevice.ACTION_ACL_CONNECTED.equals(action)) {
-                //Device is now connected
-                FinalMconected2 = true;
-                Log.i(TAG, "FinalMconected2 = true; ");
-
+        }).setNegativeButton("CANCEL", new DialogInterface.OnClickListener() { // from class: com.Andriod.ER.com.MainActivity.3
+            @Override // android.content.DialogInterface.OnClickListener
+            public void onClick(DialogInterface dialogInterface, int i) {
             }
+        }).create().show();
+    }
 
-            else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
-                mConnected = false;
-                FinalMconected = false;
-
-                FinalMconected2 = false;
-
-                Log.i(TAG, "mConnected = false; ");
-
-                //updateConnectionState(R.string.disconnected);
-                //invalidateOptionsMenu();
-            } else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
-                // Show all the supported services and characteristics on the user interface.
-                if (mConnected) {
-                    displayGattServices(mBluetoothLeService.getSupportedGattServices());
+    private void askPermissionForBackgroundUsage() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this, "android.permission.ACCESS_BACKGROUND_LOCATION")) {
+            new AlertDialog.Builder(this).setTitle("Permission Needed!").setMessage("Background Location Permission needed to enable bluetooth scanning and connectivity features to monitor your battery!, please tap \"Allow all time in the next screen\"").setPositiveButton("OK", new DialogInterface.OnClickListener() { // from class: com.Andriod.ER.com.MainActivity.6
+                @Override // android.content.DialogInterface.OnClickListener
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{"android.permission.ACCESS_BACKGROUND_LOCATION"}, 125);
                 }
-            }
+            }).setNegativeButton("CANCEL", new DialogInterface.OnClickListener() { // from class: com.Andriod.ER.com.MainActivity.5
+                @Override // android.content.DialogInterface.OnClickListener
+                public void onClick(DialogInterface dialogInterface, int i) {
+                }
+            }).create().show();
+        } else {
+            ActivityCompat.requestPermissions(this, new String[]{"android.permission.ACCESS_BACKGROUND_LOCATION"}, 125);
         }
-    };
+    }
 
-
-
-
-    protected void checkPermission11(){
-        Log.i(TAG,"checkPermission11");
-
-        if(     ContextCompat.checkSelfPermission(
-                this,Manifest.permission.ACCESS_FINE_LOCATION)
-                + ContextCompat.checkSelfPermission(
-                this,Manifest.permission.ACCESS_COARSE_LOCATION)
-                + ContextCompat.checkSelfPermission(
-                this,Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-
-                != PackageManager.PERMISSION_GRANTED){
-
-            // Do something, when permissions not granted
-            if(     ActivityCompat.shouldShowRequestPermissionRationale(
-                    this,Manifest.permission.ACCESS_FINE_LOCATION)
-                    || ActivityCompat.shouldShowRequestPermissionRationale(
-                    this,Manifest.permission.ACCESS_COARSE_LOCATION)
-                    || ActivityCompat.shouldShowRequestPermissionRationale(
-                    this,Manifest.permission.ACCESS_BACKGROUND_LOCATION)){
-                // If we should give explanation of requested permissions
-
-                // Show an alert dialog here with request explanation
-                Builder builder = new Builder(this);
-                builder.setMessage("Access to Bluetooth and Location" +
-                        " are required to do the task.");
-                builder.setTitle("Please grant those permissions");
-
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        if (Build.VERSION.SDK_INT >= 31) {
-                            ActivityCompat.requestPermissions(
-                                    MainActivity.this,
-                                    new String[]{
-                                            Manifest.permission.BLUETOOTH_SCAN,
-                                            Manifest.permission.BLUETOOTH_CONNECT,
-                                    },
-                                    MY_PERMISSIONS_REQUEST_CODE_Scan_Connect
-                            );
-                            return;
-                        }
-
-                        ActivityCompat.requestPermissions(
-                                MainActivity.this,
-                                new String[]{
-                                        Manifest.permission.ACCESS_FINE_LOCATION,
-                                        Manifest.permission.ACCESS_COARSE_LOCATION,
-                                },
-                                MY_PERMISSIONS_REQUEST_CODE
-                        );
-
-
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                            ActivityCompat.requestPermissions(
-                                    MainActivity.this,
-                                    new String[]{
-                                            Manifest.permission.ACCESS_BACKGROUND_LOCATION
-                                    },
-                                    MY_PERMISSIONS_REQUEST_CODE
-                            );
-                        }
-                    }
-                });
-                builder.setNeutralButton("Cancel",null);
-                AlertDialog dialog = builder.create();
-                dialog.show();
-            }else{
-                // Directly request for required permissions, without explanation
+    protected void checkPermission12() {
+        Log.i(TAG, "checkPermission12");
+        if (ContextCompat.checkSelfPermission(this, "android.permission.BLUETOOTH_SCAN") == 0 && ContextCompat.checkSelfPermission(this, "android.permission.BLUETOOTH_CONNECT") == 0) {
+            return;
+        }
+        Log.i(TAG, "!= PackageManager.PERMISSION_GRANTED");
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Energy Research needs permission to access the Bluetooth scanning and connectivity features to find nearby ER batteries and connect to them!");
+        builder.setCancelable(false);
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() { // from class: com.Andriod.ER.com.MainActivity.7
+            @Override // android.content.DialogInterface.OnClickListener
+            public void onClick(DialogInterface dialogInterface, int i) {
                 if (Build.VERSION.SDK_INT >= 31) {
-                    ActivityCompat.requestPermissions(
-                            this,
-                            new String[]{
-                                    Manifest.permission.BLUETOOTH_SCAN,
-                                    Manifest.permission.BLUETOOTH_CONNECT,
-                            },
-                            MY_PERMISSIONS_REQUEST_CODE_Scan_Connect
-                    );
+                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{"android.permission.BLUETOOTH_SCAN", "android.permission.BLUETOOTH_CONNECT"}, 124);
                 }
-
-                ActivityCompat.requestPermissions(
-                        this,
-                        new String[]{
-                                Manifest.permission.ACCESS_FINE_LOCATION,
-                                Manifest.permission.ACCESS_COARSE_LOCATION,
-                        },
-                        MY_PERMISSIONS_REQUEST_CODE
-                );
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    ActivityCompat.requestPermissions(
-                            this,
-                            new String[]{
-                                    Manifest.permission.ACCESS_BACKGROUND_LOCATION
-                            },
-                            MY_PERMISSIONS_REQUEST_CODE
-                    );
-                }
-
-
+                dialogInterface.cancel();
+                MainActivity.this.busy = false;
             }
-        }else {
-            // Do something, when permissions are already granted
-            // Toast.makeText(this,"Permissions already granted",Toast.LENGTH_SHORT).show();
-        }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() { // from class: com.Andriod.ER.com.MainActivity.8
+            @Override // android.content.DialogInterface.OnClickListener
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.cancel();
+                MainActivity.this.busy = false;
+            }
+        });
+        builder.create().show();
     }
 
-
-    protected void checkPermission12(){
-        Log.i(TAG,"checkPermission12");
-
-        if(     ContextCompat.checkSelfPermission(
-                this,Manifest.permission.BLUETOOTH_SCAN)
-                + ContextCompat.checkSelfPermission(
-                this,Manifest.permission.BLUETOOTH_CONNECT)
-               /* + ContextCompat.checkSelfPermission(
-                this,Manifest.permission.ACCESS_FINE_LOCATION)
-                + ContextCompat.checkSelfPermission(
-                this,Manifest.permission.ACCESS_COARSE_LOCATION)*/
-                != PackageManager.PERMISSION_GRANTED){
-
-            // Do something, when permissions not granted
-            if(ActivityCompat.shouldShowRequestPermissionRationale(
-                    this,Manifest.permission.BLUETOOTH_SCAN)
-                    || ActivityCompat.shouldShowRequestPermissionRationale(
-                    this,Manifest.permission.BLUETOOTH_CONNECT)
-                   /* || ActivityCompat.shouldShowRequestPermissionRationale(
-                    this,Manifest.permission.ACCESS_FINE_LOCATION)
-                    || ActivityCompat.shouldShowRequestPermissionRationale(
-                    this,Manifest.permission.ACCESS_COARSE_LOCATION)*/  ){
-                // If we should give explanation of requested permissions
-
-                // Show an alert dialog here with request explanation
-                Builder builder = new Builder(this);
-                builder.setMessage("Access to Bluetooth Scan and Bluetooth Connect" +
-                        " are required to do the task.");
-                builder.setTitle("Please grant those permissions");
-
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        if (Build.VERSION.SDK_INT >= 31) {
-                            ActivityCompat.requestPermissions(
-                                    MainActivity.this,
-                                    new String[]{
-                                            Manifest.permission.BLUETOOTH_SCAN,
-                                            Manifest.permission.BLUETOOTH_CONNECT,
-                                    },
-                                    MY_PERMISSIONS_REQUEST_CODE_Scan_Connect
-                            );
-                        }
-
-                      /*  ActivityCompat.requestPermissions(
-                                MainActivity.this,
-                                new String[]{
-                                        Manifest.permission.ACCESS_FINE_LOCATION,
-                                        Manifest.permission.ACCESS_COARSE_LOCATION,
-                                },
-                                MY_PERMISSIONS_REQUEST_CODE
-                        );*/
-
-                    }
-                });
-                builder.setNeutralButton("Cancel",null);
-                AlertDialog dialog = builder.create();
-                dialog.show();
-            }else{
-                // Directly request for required permissions, without explanation
-                if (Build.VERSION.SDK_INT >= 31) {
-                    ActivityCompat.requestPermissions(
-                            this,
-                            new String[]{
-                                    Manifest.permission.BLUETOOTH_SCAN,
-                                    Manifest.permission.BLUETOOTH_CONNECT,
-                            },
-                            MY_PERMISSIONS_REQUEST_CODE_Scan_Connect
-                    );
-                }
-
-               /* ActivityCompat.requestPermissions(
-                        this,
-                        new String[]{
-                                Manifest.permission.ACCESS_FINE_LOCATION,
-                                Manifest.permission.ACCESS_COARSE_LOCATION,
-                        },
-                        MY_PERMISSIONS_REQUEST_CODE
-                );*/
-
-                /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    ActivityCompat.requestPermissions(
-                            this,
-                            new String[]{
-                                    Manifest.permission.ACCESS_BACKGROUND_LOCATION
-                            },
-                            MY_PERMISSIONS_REQUEST_CODE
-                    );
-                }*/
-
-
-            }
-        }else {
-            // Do something, when permissions are already granted
-            //  Toast.makeText(this,"Permissions already granted",Toast.LENGTH_SHORT).show();
-        }
-    }
     protected void checkPermission() {
         if (Build.VERSION.SDK_INT >= 31) {
             checkPermission12();
+        } else {
+            checkPermission111();
         }
-        else  {checkPermission11();}
-
     }
 
+    @Override // androidx.appcompat.app.AppCompatActivity, android.app.Activity
+    protected void onPostCreate(Bundle bundle) {
+        super.onPostCreate(bundle);
+    }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
+    @Override // androidx.fragment.app.FragmentActivity, androidx.activity.ComponentActivity, androidx.core.app.ComponentActivity, android.app.Activity
+    public void onCreate(Bundle bundle) {
         mConnected = false;
-        setTheme(R.style.AppTheme);
-        super.onCreate(savedInstanceState);
-        // 🔐 Add permission checks here BEFORE anything starts the ForegroundService
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED ||
-                    ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
-
-                ActivityCompat.requestPermissions(this,
-                        new String[]{
-                                Manifest.permission.BLUETOOTH_CONNECT,
-                                Manifest.permission.BLUETOOTH_SCAN
-                        },
-                        1001);
-                return;
-            }
-        }
-
-        /*Intent mainIntent = new Intent(MainActivity.this, SplashActivity.class);
-        MainActivity.this.startActivity(mainIntent);*/
-
+        super.onCreate(bundle);
         setContentView(R.layout.activity_main);
-        // Make app draw edge-to-edge
-        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
-        ViewGroup rootView = findViewById(R.id.Main);
-
-        ViewCompat.setOnApplyWindowInsetsListener(rootView, (v, insets) -> {
-            int topInset = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
-            int bottomInset = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
-
-            // Add padding to avoid overlapping status bar and navigation bar
-            v.setPadding(0, topInset, 0, bottomInset);
-            return insets;
-        });
-        getSupportActionBar().hide();
-
-        final Intent intent = getIntent();
-        mDeviceName = intent.getStringExtra(EXTRAS_DEVICE_NAME);
-        mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
-
-        BatteryNum = findViewById(R.id.BatteryNo);
-        BatteryNum.setText("Energy-Research");
-
-        percent = findViewById(R.id.Percentage);
-        voltage = findViewById(R.id.Voltage);
-        current = findViewById(R.id.Current);
-        time = findViewById(R.id.Time);
-        temp = findViewById(R.id.Temperature);
-
-        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
-        lockButton = findViewById(R.id.Lockbut);
-
-        //public TextView V_cell, V_pack, OC, OT, Error;
-       // V_cell = findViewById(R.id.Single);
-        V_pack = findViewById(R.id.Pack);
-        OT = findViewById(R.id.TempProtect);
-        OC = findViewById(R.id.CurrentProt);
-        Error = findViewById(R.id.Error);
-
-        //V_cell.setVisibility(View.INVISIBLE);
-        V_pack.setVisibility(View.INVISIBLE);
-        OT.setVisibility(View.INVISIBLE);
-        OC.setVisibility(View.INVISIBLE);
-        Error.setVisibility(View.INVISIBLE);
-
-
-        percent.bringToFront();
-        voltage.bringToFront();
-        current.bringToFront();
-        time.bringToFront();
-        temp.bringToFront();
+        View test = findViewById(R.id.Warning);
+        if (test == null) {
+            Log.e("MainActivity", "Warning TextView is NULL");
+        } else {
+            Log.d("MainActivity", "Warning TextView found: " + test.toString());
+        }
+        Intent intent = getIntent();
+        TextView textView = (TextView) findViewById(R.id.Warning);
+        this.Warning = textView;
+        textView.setVisibility(View.INVISIBLE);
+        this.mDeviceName = intent.getStringExtra(EXTRAS_DEVICE_NAME);
+        this.mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
+        TextView textView2 = (TextView) findViewById(R.id.BatteryNo);
+        this.BatteryNum = textView2;
+        textView2.setText("Energy-Research");
+        this.percent = (TextView) findViewById(R.id.Percentage);
+        this.voltage = (TextView) findViewById(R.id.Voltage);
+        this.current = (TextView) findViewById(R.id.Current);
+        this.time = (TextView) findViewById(R.id.Time);
+        this.temp = (TextView) findViewById(R.id.Temperature);
+        this.mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
+        this.lockButton = (ImageButton) findViewById(R.id.Lockbut);
+        this.percent.bringToFront();
+        this.voltage.bringToFront();
+        this.current.bringToFront();
+        this.time.bringToFront();
+        this.temp.bringToFront();
         ClearInterface();
-        startGround();
-        Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
-        bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
+        bindService(new Intent(this, (Class<?>) BluetoothLeService.class), this.mServiceConnection, 1);
         startThread();
-
-        //Permissions for Bluetooth
-       // checkPermission();
-
-        // Use this check to determine whether BLE is supported on the device.  Then you can
-        // selectively disable BLE-related features.
-        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-            Toast.makeText(this, R.string.ble_not_supported, Toast.LENGTH_SHORT).show();
-        }
-
-        // Initializes a Bluetooth adapter.  For API level 18 and above, get a reference to
-        // BluetoothAdapter through BluetoothManager.
-        final BluetoothManager bluetoothManager =
-                (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-        mBluetoothAdapter = bluetoothManager.getAdapter();
-
-        // Checks if Bluetooth is supported on the device.
-        if (mBluetoothAdapter == null) {
-            Toast.makeText(this, R.string.error_bluetooth_not_supported, Toast.LENGTH_SHORT).show();
-            //Intent i =new Intent(DeviceScanActivity.this,MainActivity.class);
-            // startActivity(i);
-            return;
-        }
-       /* mBtnDoTask = findViewById(R.id.link);
         checkPermission();
-        // Set a click listener for the button
-        mBtnDoTask.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-                    checkPermission();
-                }
-            }
-        });*/
-
-
-    }
-
-
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_CODE: {
-                // When request is cancelled, the results array are empty
-                if (
-                        (grantResults.length > 0) &&
-                                grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // Permissions are granted
-                    Toast.makeText(this, "Location Permissions granted.", Toast.LENGTH_SHORT).show();
-                } else {
-                    //  checkPermission();
-                    // Permissions are denied
-                    Toast.makeText(this, "Location Permissions denied.", Toast.LENGTH_SHORT).show();
-                }
-                return;
-            }
-            case MY_PERMISSIONS_REQUEST_CODE_Scan_Connect: {
-                // When request is cancelled, the results array are empty
-                if (
-                        (grantResults.length > 0) &&
-                                grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // Permissions are granted
-                    Toast.makeText(this, "Scan_Connect Permissions granted.", Toast.LENGTH_SHORT).show();
-                } else {
-                    //  checkPermission();
-                    // Permissions are denied
-                    Toast.makeText(this, "Scan_Connect Permissions denied.", Toast.LENGTH_SHORT).show();
-                }
-                return;
-            }
-
+        if (!getPackageManager().hasSystemFeature("android.hardware.bluetooth_le")) {
+            Toast.makeText(this, this.bluetoothNotSupported, Toast.LENGTH_SHORT).show();
+        }
+        BluetoothAdapter adapter = ((BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
+        this.mBluetoothAdapter = adapter;
+        if (adapter == null) {
+            Toast.makeText(this, this.bluetoothNotSupported, Toast.LENGTH_SHORT).show();
         }
     }
 
-    public void startThread()
-    {
-        MyThread thread = new MyThread();
-        thread.start();
-    }
-    public void stopThread()
-    {
-        MyThread thread = new MyThread();
-        thread.stop();
+    @Override // androidx.fragment.app.FragmentActivity, androidx.activity.ComponentActivity, android.app.Activity
+    public void onRequestPermissionsResult(int i, String[] strArr, int[] iArr) {
+        super.onRequestPermissionsResult(i, strArr, iArr);
+        switch (i) {
+            case 124:
+                if (iArr.length > 0 && iArr[0] == 0) {
+                    Toast.makeText(this, "Scan Connect Permission Granted", Toast.LENGTH_SHORT).show();
+                    break;
+                } else {
+                    Toast.makeText(this, "Scan Connect Permission Denied", Toast.LENGTH_SHORT).show();
+                    break;
+                }
+            case 125:
+                if (iArr[0] == 0) {
+                    Toast.makeText(this, "BACKGROUND Location Permission Granted", Toast.LENGTH_SHORT).show();
+                    break;
+                } else {
+                    Toast.makeText(this, "BACKGROUND Location Permission Denied", Toast.LENGTH_SHORT).show();
+                    break;
+                }
+            case 126:
+                if (iArr[0] == 0) {
+                    Toast.makeText(this, "Location Permission Granted", Toast.LENGTH_SHORT).show();
+                    checkPermission111();
+                    break;
+                } else {
+                    Toast.makeText(this, "Location Permission Denied", Toast.LENGTH_SHORT).show();
+                    break;
+                }
+        }
     }
 
+    public void startThread() {
+        new MyThread().start();
+    }
+
+    public void stopThread() {
+        new MyThread().stop();
+    }
 
     public class MyThread extends Thread {
-
-
-        MyThread()
-        {
-
+        MyThread() {
         }
-        @Override
-        public void run(){
-            Log.i(TAG,"MyThread running");
-            while (true)
-            {
-                if(!busy){
-                    if ((!mConnected)){
-                    } else if ((mConnected)&&(FinalMconected)&&(characteristicTX != null)) {
 
-                        sendDataToBLE(ReadCommand);
-                        try {
-                            Thread.sleep(200);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        sendDataToBLE(CellenReadCommand);
-                        try {
-                            Thread.sleep(500);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        updateInterFace();
-                        packegeReady = true;
-                        command = 1;
-
+        @Override // java.lang.Thread, java.lang.Runnable
+        public void run() {
+            while (true) {
+                if (!MainActivity.this.busy && MainActivity.mConnected && MainActivity.mConnected && MainActivity.FinalMconected && MainActivity.this.characteristicTX != null) {
+                    MainActivity mainActivity = MainActivity.this;
+                    mainActivity.sendDataToBLE(mainActivity.ReadCommand);
+                    try {
+                        Thread.sleep(200L);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    MainActivity mainActivity2 = MainActivity.this;
+                    mainActivity2.sendDataToBLE(mainActivity2.CellenReadCommand);
+                    try {
+                        Thread.sleep(200L);
+                    } catch (InterruptedException e2) {
+                        e2.printStackTrace();
+                    }
+                    if (MainActivity.this.mBluetoothLeService.AantalCellen != 0) {
+                        MainActivity.this.updateInterFace();
                     }
                 }
-
             }
         }
     }
 
-
-
-    void sendDataToBLE(byte str[]) {
-
-        if (characteristicTX != null) {
-            final byte[] data = str;
-            if (data != null && data.length > 0) {
-                final StringBuilder stringBuilder = new StringBuilder(data.length);
-                for (byte byteChar : data)
-                    stringBuilder.append(String.format("%02X ", byteChar));
-                encodeHexString(data);
-
+    void sendDataToBLE(byte[] bArr) {
+        if (this.characteristicTX != null) {
+            if (bArr != null && bArr.length > 0) {
+                StringBuilder sb = new StringBuilder(bArr.length);
+                for (byte b : bArr) {
+                    sb.append(String.format("%02X ", Byte.valueOf(b)));
+                }
+                encodeHexString(bArr);
             }
-            if ((mConnected) && (FinalMconected)) {
-                characteristicTX.setValue(str);
-                mBluetoothLeService.writeCharacteristic(characteristicTX);
-                mBluetoothLeService.setCharacteristicNotification(characteristicRX, true);
+            if (mConnected && FinalMconected) {
+                this.characteristicTX.setValue(bArr);
+                this.mBluetoothLeService.writeCharacteristic(this.characteristicTX);
+                this.mBluetoothLeService.setCharacteristicNotification(this.characteristicRX, true);
             }
         }
     }
 
-
-    public String encodeHexString(byte[] byteArray) {
-        StringBuffer hexStringBuffer = new StringBuffer();
-        for (int i = 0; i < byteArray.length; i++) {
-            hexStringBuffer.append(String.format("%02X ", byteArray[i]));
+    public String encodeHexString(byte[] bArr) {
+        StringBuffer stringBuffer = new StringBuffer();
+        for (byte b : bArr) {
+            stringBuffer.append(String.format("%02X ", Byte.valueOf(b)));
         }
-        Log.i(TAG,"Data hexString out:" + hexStringBuffer.toString());
-        return hexStringBuffer.toString();
+        Log.i(TAG, "Data hexString out:" + stringBuffer.toString());
+        return stringBuffer.toString();
     }
 
-
-    @Override
+    @Override // androidx.fragment.app.FragmentActivity, android.app.Activity
     protected void onResume() {
         super.onResume();
-        Log.i(TAG, "Back to MainActivity..");
-
-        // Step 1: Register GATT update receiver
-        registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter(), RECEIVER_NOT_EXPORTED);
-
-        // Step 2: Check Bluetooth permission (Android 12+)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
-                ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT)
-                        != PackageManager.PERMISSION_GRANTED) {
-            Log.w(TAG, "Missing BLUETOOTH_CONNECT permission. Requesting...");
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.BLUETOOTH_CONNECT},
-                    REQUEST_BLUETOOTH_CONNECT);
-            return; // Don't try to connect until permission granted
+        Log.i(TAG, " Back to MainActivity..");
+        Log.i(TAG, " Connection..");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(this.mGattUpdateReceiver, makeGattUpdateIntentFilter(), null,null,Context.RECEIVER_NOT_EXPORTED);
+        } else {
+            registerReceiver(this.mGattUpdateReceiver, makeGattUpdateIntentFilter());
         }
 
-        // Step 3: Attempt reconnection only if device address is valid
-        if (mBluetoothLeService != null && mDeviceAddress != null) {
-            Log.i(TAG, "Attempting BLE reconnect to: " + mDeviceAddress);
-            final boolean result = mBluetoothLeService.connect(mDeviceAddress);
-            Log.i(TAG, "Connect request result = " + result);
-        } else {
-            Log.w(TAG, "BluetoothLeService or device address is null. Skipping connection.");
+        BluetoothLeService bluetoothLeService = this.mBluetoothLeService;
+        if (bluetoothLeService != null) {
+            boolean connect = bluetoothLeService.connect(this.mDeviceAddress);
+            Log.i(TAG, "Connect request result=" + connect);
         }
     }
 
-    @Override
+    @Override // androidx.fragment.app.FragmentActivity, android.app.Activity
     protected void onPause() {
         super.onPause();
-        try {
-            unregisterReceiver(mGattUpdateReceiver);
-        } catch (IllegalArgumentException e) {
-            Log.w(TAG, "Receiver already unregistered.");
-        }
+        unregisterReceiver(this.mGattUpdateReceiver);
     }
 
-
-    @Override
+    @Override // androidx.appcompat.app.AppCompatActivity, androidx.fragment.app.FragmentActivity, android.app.Activity
     protected void onDestroy() {
         super.onDestroy();
-        unbindService(mServiceConnection);
-        mBluetoothLeService = null;
+        unbindService(this.mServiceConnection);
+        this.mBluetoothLeService = null;
     }
 
-
-/*
-    @Override
+    @Override // android.app.Activity
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.gatt_services, menu);
         if (mConnected) {
@@ -1059,210 +638,61 @@ public class MainActivity extends AppCompatActivity {
         }
         return true;
     }
-*/
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case 1000142:
-                mBluetoothLeService.connect(mDeviceAddress);
-                return true;
-            case 100083:
-                mBluetoothLeService.disconnect();
-                return true;
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
-
-    private void updateInterFace() {
-        runOnUiThread(new Runnable() {
-            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-            @Override
+    /* JADX INFO: Access modifiers changed from: private */
+    public void updateInterFace() {
+        runOnUiThread(new Runnable() { // from class: com.Andriod.ER.com.MainActivity.9
+            @Override // java.lang.Runnable
             public void run() {
-                if ((mConnected)&&(FinalMconected)) {
-                    if (mBluetoothLeService.DataReady) {
-                        WorkInterface();
-                    }
+                Log.i(MainActivity.TAG, "updateInterFace");
+                if (MainActivity.mConnected && MainActivity.FinalMconected && !MainActivity.this.busy && MainActivity.this.mBluetoothLeService.DataReady) {
+                    MainActivity.this.WorkInterface();
                 }
             }
         });
     }
 
-
-    // Demonstrates how to iterate through the supported GATT Services/Characteristics.
-    // In this sample, we populate the data structure that is bound to the ExpandableListView
-    // on the UI.
-    private void displayGattServices(List<BluetoothGattService> gattServices) {
-        if (gattServices == null) return;
-        UUID uuid = null;
-        String UUIDCharacters = null;
-        String unknownServiceString = getResources().getString(R.string.unknown_service);
-        ArrayList<HashMap<String, String>> gattServiceData = new ArrayList<HashMap<String, String>>();
-        BluetoothGattCharacteristic characteristic = null;
-
-        // Loops through available GATT Services.
-        for (BluetoothGattService gattService : gattServices) {
-            uuid = gattService.getUuid();
+    /* JADX INFO: Access modifiers changed from: private */
+    public void displayGattServices(List<BluetoothGattService> list) {
+        if (list == null) {
+            return;
+        }
+        getResources().getString(R.string.unknown_service);
+        new ArrayList();
+        for (BluetoothGattService bluetoothGattService : list) {
+            UUID uuid = bluetoothGattService.getUuid();
             Log.i(TAG, "UUIDService:" + String.valueOf(uuid));
-            // If the service is the one say so.
-            if (uuid.equals(myisscServiceUUID)) {
+            if (uuid.equals(this.myisscServiceUUID)) {
                 Log.i(TAG, "Service Descoverd");
-                // get characteristic when UUID matches RX/TX UUID
-                characteristicTX = gattService.getCharacteristic(myisscTxUUID);
-                Log.i(TAG, "UUIDTX:" + String.valueOf(characteristicTX));
-                characteristicRX = gattService.getCharacteristic(myisscRxUUID);
-                Log.i(TAG, "UUIDRX:" + String.valueOf(characteristicRX));
-
+                this.characteristicTX = bluetoothGattService.getCharacteristic(this.myisscTxUUID);
+                Log.i(TAG, "UUIDTX:" + String.valueOf(this.characteristicTX));
+                this.characteristicRX = bluetoothGattService.getCharacteristic(this.myisscRxUUID);
+                Log.i(TAG, "UUIDRX:" + String.valueOf(this.characteristicRX));
             }
-
-
         }
         FinalMconected = true;
+        this.busy = false;
         Log.i(TAG, "FinalMconected = true;");
-
-
     }
 
-
     public void open_Dialog_Cells(View view) throws InterruptedException {
-        if(mConnected) {
-            //send data setting
+        if (mConnected) {
             Bundle bundle = new Bundle();
-            float[] cells = {(float) mBluetoothLeService.AantalCellen, mBluetoothLeService.cel1, mBluetoothLeService.cel2, mBluetoothLeService.cel3, mBluetoothLeService.cel4,
-                    mBluetoothLeService.cel5, mBluetoothLeService.cel6, mBluetoothLeService.cel7, mBluetoothLeService.cel8,
-                    mBluetoothLeService.cel9, mBluetoothLeService.cel10, mBluetoothLeService.cel11, mBluetoothLeService.cel12,
-                    mBluetoothLeService.cel13, mBluetoothLeService.cel14, mBluetoothLeService.cel15, mBluetoothLeService.cel16};
-            bundle.putFloatArray("cells", cells);
-
+            bundle.putFloatArray("cells", new float[]{this.mBluetoothLeService.AantalCellen, this.mBluetoothLeService.cel1, this.mBluetoothLeService.cel2, this.mBluetoothLeService.cel3, this.mBluetoothLeService.cel4, this.mBluetoothLeService.cel5, this.mBluetoothLeService.cel6, this.mBluetoothLeService.cel7, this.mBluetoothLeService.cel8, this.mBluetoothLeService.cel9, this.mBluetoothLeService.cel10, this.mBluetoothLeService.cel11, this.mBluetoothLeService.cel12, this.mBluetoothLeService.cel13, this.mBluetoothLeService.cel14, this.mBluetoothLeService.cel15, this.mBluetoothLeService.cel16});
+            bundle.putString("mDeviceName", this.mDeviceName);
             CellenDialog cellenDialog = new CellenDialog();
-
-            //send data
             cellenDialog.setArguments(bundle);
-
             cellenDialog.show(getSupportFragmentManager(), "Battery Cells");
         }
     }
 
-
-
     private static IntentFilter makeGattUpdateIntentFilter() {
-        final IntentFilter intentFilter = new IntentFilter();
+        IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(BluetoothLeService.ACTION_GATT_CONNECTED);
-        intentFilter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
+        intentFilter.addAction("android.bluetooth.device.action.ACL_CONNECTED");
         intentFilter.addAction(BluetoothLeService.ACTION_GATT_DISCONNECTED);
         intentFilter.addAction(BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED);
         intentFilter.addAction(BluetoothLeService.ACTION_DATA_AVAILABLE);
         return intentFilter;
     }
-
-    public static int[] getRandomNumberNumber() {
-        // It will generate 6 digit random Number.
-        // from 0 to 999999
-        Random rnd = new Random();
-        int intArray[];    //declaring array
-        intArray = new int[6];  // allocating memory to array
-        intArray[0] = rnd.nextInt(9);
-        intArray[1] = rnd.nextInt(9);
-        intArray[2] = rnd.nextInt(9);
-        intArray[3] = rnd.nextInt(9);
-        intArray[4] = rnd.nextInt(9);
-        intArray[5] = rnd.nextInt(9);
-
-        // this will convert any number sequence into 6 character.
-        return intArray;
-    }
-
-    public void Reserve(View view) throws InterruptedException
-    {
-        if (mConnected) {
-            AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
-            builder1.setMessage("If you use your reserve capacity, you are obliged to charge your battery within 24 hours. If you do not charge your battery, you will lose your guarantee." +
-                    "  \n When you press ok, data is collected into our database to prove that you have indeed charged your battery.");
-            builder1.setCancelable(true);
-            builder1.setPositiveButton("OK",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            //put your code that needed to be executed when okay is clicked
-                            try {
-                                Calibrate_UV((float) 2.65, (float) 3);//normal
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            dialog.cancel();
-
-
-                        }
-                    });
-            builder1.setNegativeButton("Cancel",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.cancel();
-                        }
-                    });
-
-            AlertDialog alert11 = builder1.create();
-            alert11.show();
-
-        }
-    }
-
-    public void Registration(View view) throws InterruptedException {
-        busy = true;
-        Calibrate_UV((float) 2.85, (float) 3.1);//hoger
-        busy = false;
-    }
-
-    public void Calibrate_UV(float UV, float UV_release) throws InterruptedException {
-        if (mConnected == true)
-        {
-            busy = true;
-
-            int cells = mBluetoothLeService.AantalCellen;
-            float UVP = (float) (cells * UV * 100);
-            float UVPR = (float) (cells * UV_release * 100);
-            Log.i(TAG, "cells: " + cells + " ,UVP = " + UVP + " ,UVPR= " + UVPR );
-
-            // mProgressDialog = ProgressDialog.show(Calibration.this,"Calibrating!", "Please wait...",false,false);
-            sendDataToBLE(fabriekMode);
-            TimeUnit.MILLISECONDS.sleep(500);
-            Calibrate((int)(UV*1000), (byte) 0x26);   //UNDERVOLTAGE 2.65V
-            TimeUnit.MILLISECONDS.sleep(500);
-            Calibrate((int)(UV_release*1000), (byte) 0x27);   //UNDERVOLTAGE RELEASE 3V
-            TimeUnit.MILLISECONDS.sleep(500);
-            Calibrate((int)(UVP), (byte) 0x22);   //PACK UNDERVOLTAGE
-            TimeUnit.MILLISECONDS.sleep(500);
-            Calibrate((int)(UVPR), (byte) 0x23);   //PACK UNDERVOLTAGE RELEASE
-            TimeUnit.MILLISECONDS.sleep(500);
-            sendDataToBLE(OUTfabriekMode);
-            busy = false;
-            //Show success toast
-            Toast.makeText(MainActivity.this,"Calibration Finished!",Toast.LENGTH_LONG).show();
-        }
-
-        else{
-            Openscan();
-        }
-    }
-
-    public void Calibrate(int Data, byte register)
-    {
-        byte[] dataCal = {(byte) ((Data >> 8) & 0xFF), (byte) ((Data >> 0) & 0xff)};
-        int Data0_int = (int) dataCal[0]& 0xFF;
-        int Data1_int = (int) dataCal[1]& 0xFF;
-        int register_int = (int) register& 0xFF;
-        int checksum = Data0_int + Data1_int + register_int + 1; //(Data + 0xRegister + Data Length - 1) ^ 0xFFFF
-        Log.i(TAG, "Data: " + Data + " ,Data0_int = " + Data0_int + " ,Data1_int= " + Data1_int + " , register_int:" + register_int);
-        byte CHECK_L = (byte) (checksum & 0xFF);
-        byte CHECK_H = (byte) ((checksum >> 8) & 0xFF);
-        //byte[] CHECK = {(byte) ((checksum >> 8) & 0xFF), (byte) (checksum & 0xFF)};
-     /*   Log.i(TAG, "dataCal[0]: "+ Integer.toHexString(dataCal[0] & 0xFF)  + ", dataCal[1]: " + Integer.toHexString(dataCal[1] & 0xFF) +
-                 ", register: " + Integer.toHexString(register) + ", checksum d: " + checksum + ", int test: " + nice +
-                ", CHECK[0]: " + Integer.toHexString((CHECK_H) & 0xFF) + ", CHECK[1]: " + Integer.toHexString((CHECK_L) & 0xFF));*/
-        byte[] Data_OUT = {(byte) 0xDD,(byte)  0x5A,(byte) register,(byte)  0x02, dataCal[0] , dataCal[1], (byte) (CHECK_H^0xFF), (byte) (CHECK_L^0xFF), (byte)  0x77, };
-        sendDataToBLE(Data_OUT);
-    }
-
 }
