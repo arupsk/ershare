@@ -10,386 +10,317 @@
     tools:context=".com.MainActivity"
     tools:ignore="ExtraText"
     android:fitsSystemWindows="false">
-
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar2"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="#FFF"
-        android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme"
+        android:id="@+id/toolbar2"
+        android:background="#fff"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="?attr/actionBarSize"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
+        app:layout_constraintTop_toTopOf="parent"/>
+    <ImageView
+        android:id="@+id/hamburger"
+        android:padding="8dp"
+        android:visibility="invisible"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:src="@drawable/menu_icon"
+        app:layout_constraintBottom_toBottomOf="@+id/toolbar2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
     <TextView
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textSize="20dp"
+        android:textColor="#000"
         android:id="@+id/BatteryNo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:alpha="1"
         android:text="@string/BatteryNo"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:textColor="#000"
-        android:textSize="20dp"
-
+        android:alpha="1"
         app:drawableTint="#000000"
         app:layout_constraintBottom_toBottomOf="@+id/toolbar2"
         app:layout_constraintEnd_toStartOf="@+id/unlink"
         app:layout_constraintStart_toEndOf="@+id/link"
-        app:layout_constraintTop_toTopOf="@+id/toolbar2" />
-
+        app:layout_constraintTop_toTopOf="@+id/toolbar2"/>
     <Button
         android:id="@+id/link"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginLeft="10dp"
         android:foreground="@drawable/link_icon"
-        android:foregroundGravity="center|fill"
-        android:onClick="Link"
         android:text="@string/Link"
+        android:foregroundGravity="fill"
+        android:onClick="Link"
         app:layout_constraintBottom_toBottomOf="@+id/toolbar2"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
+        app:layout_constraintStart_toEndOf="@+id/hamburger"
+        app:layout_constraintTop_toTopOf="parent"/>
     <Button
         android:id="@+id/unlink"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_marginRight="10dp"
+        android:layout_marginRight="55dp"
         android:foreground="@drawable/unlink_icon"
-        android:foregroundGravity="center|fill"
-        android:onClick="UnLink"
         android:text="@string/UnLink"
+        android:foregroundGravity="fill"
+        android:onClick="UnLink"
+        app:layout_constraintBottom_toBottomOf="@+id/toolbar2"
+        app:layout_constraintEnd_toStartOf="@+id/logoutBtn"
+        app:layout_constraintTop_toTopOf="parent"/>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/logoutBtn"
+        android:visibility="gone"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginRight="10dp"
+        android:foreground="@drawable/logout"
+        android:text="@string/Link"
+        android:foregroundGravity="center"
         app:layout_constraintBottom_toBottomOf="@+id/toolbar2"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
+        app:layout_constraintTop_toTopOf="parent"/>
     <View
         android:id="@+id/view"
+        android:visibility="visible"
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:layout_marginTop="5dp"
-
-        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar2" />
-
+        app:layout_constraintTop_toBottomOf="@+id/toolbar2"/>
     <TextView
+        android:textSize="20sp"
+        android:textColor="#000"
         android:id="@+id/Percentage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/Percent"
-        android:textColor="#000"
-        android:textSize="20sp"
         app:drawableTint="#040303"
         app:layout_constraintBottom_toBottomOf="@+id/view"
         app:layout_constraintEnd_toEndOf="@+id/view"
         app:layout_constraintStart_toStartOf="@+id/view"
-        app:layout_constraintTop_toTopOf="@+id/view" />
-
+        app:layout_constraintTop_toTopOf="@+id/view"/>
     <TextView
+        android:textSize="15sp"
+        android:textColor="#000"
         android:id="@+id/Current"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
         android:text="@string/Amps"
-        android:textColor="#000"
-        android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="@+id/CircleCurrent"
         app:layout_constraintStart_toStartOf="@+id/CircleCurrent"
-        app:layout_constraintTop_toTopOf="@+id/CircleCurrent" />
-
+        app:layout_constraintTop_toTopOf="@+id/CircleCurrent"/>
     <TextView
+        android:textSize="15sp"
+        android:textColor="#000"
         android:id="@+id/Voltage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
         android:text="@string/Volt"
-        android:textColor="#000"
-        android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="@+id/CircleVoltage"
         app:layout_constraintStart_toStartOf="@+id/CircleVoltage"
-        app:layout_constraintTop_toTopOf="@+id/CircleVoltage" />
-
+        app:layout_constraintTop_toTopOf="@+id/CircleVoltage"/>
     <TextView
+        android:textSize="15sp"
+        android:textColor="#000"
         android:id="@+id/Temperature"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
         android:text="@string/Temp"
-        android:textColor="#000"
-        android:textSize="15sp"
+        android:onClick="Proaction_state_func"
         app:layout_constraintEnd_toEndOf="@+id/circleTemp"
         app:layout_constraintStart_toStartOf="@+id/circleTemp"
-        app:layout_constraintTop_toTopOf="@+id/circleTemp" />
-
+        app:layout_constraintTop_toTopOf="@+id/circleTemp"/>
     <TextView
+        android:textSize="15sp"
+        android:textColor="#000"
         android:id="@+id/Time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
         android:text="@string/Time"
-        android:textColor="#000"
-        android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="@+id/circleTime"
         app:layout_constraintStart_toStartOf="@+id/circleTime"
-        app:layout_constraintTop_toTopOf="@+id/circleTime" />
-
-
+        app:layout_constraintTop_toTopOf="@+id/circleTime"/>
     <ImageView
         android:id="@+id/LogoER"
         android:layout_width="120dp"
         android:layout_height="120dp"
-        android:layout_marginBottom="25dp"
-        android:alpha="0.8"
-        android:src="@drawable/logo_er_smal"
-        android:foregroundGravity="center|fill"
+        android:foreground="@drawable/logo_er_smal"
         android:scaleType="centerInside"
+        android:foregroundGravity="fill"
+        android:alpha="0.8"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent" />
-
-
+        app:layout_constraintStart_toStartOf="parent"/>
     <ImageView
         android:id="@+id/CircleCurrent"
+        android:focusable="auto"
+        android:focusableInTouchMode="true"
         android:layout_width="120dp"
         android:layout_height="120dp"
         android:layout_marginTop="-25dp"
+        android:foreground="@drawable/pngegg1"
         android:alpha="1"
-        android:focusable="auto"
-        android:focusableInTouchMode="true"
-        android:src="@drawable/pngegg1"
-        android:contentDescription="@string/desc_circle_current"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/view" />
-
-
+        app:layout_constraintTop_toBottomOf="@+id/view"/>
     <ImageView
         android:id="@+id/CircleVoltage"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:layout_marginStart="50dp"
-        android:layout_marginTop="-15dp"
-        android:alpha="1"
         android:focusable="auto"
         android:focusableInTouchMode="true"
-        android:src="@drawable/pngegg1"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_marginTop="-15dp"
+        android:foreground="@drawable/pngegg1"
         android:scaleType="fitXY"
-        android:contentDescription="@string/desc_circle_voltage"
+        android:alpha="1"
+        android:layout_marginStart="50dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/CircleCurrent" />
-
+        app:layout_constraintTop_toBottomOf="@+id/CircleCurrent"/>
     <ImageView
         android:id="@+id/circleTemp"
+        android:focusable="auto"
+        android:focusableInTouchMode="true"
         android:layout_width="120dp"
         android:layout_height="120dp"
         android:layout_marginTop="-15dp"
-        android:layout_marginEnd="50dp"
-        android:alpha="1"
-        android:focusable="auto"
-        android:focusableInTouchMode="true"
-        android:src="@drawable/pngegg1"
-        android:contentDescription="@string/desc_circle_temp"
+        android:foreground="@drawable/pngegg1"
         android:scaleType="fitXY"
+        android:onClick="Proaction_state_func"
+        android:alpha="1"
+        android:layout_marginEnd="50dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/circleTime" />
-
+        app:layout_constraintTop_toBottomOf="@+id/circleTime"/>
     <ImageView
         android:id="@+id/circleTime"
+        android:focusable="auto"
+        android:focusableInTouchMode="true"
         android:layout_width="120dp"
         android:layout_height="120dp"
         android:layout_marginTop="-25dp"
-        android:alpha="1"
-        android:focusable="auto"
-        android:focusableInTouchMode="true"
-        android:src="@drawable/pngegg1"
-        android:foregroundGravity="fill"
+        android:foreground="@drawable/pngegg1"
         android:scaleType="fitXY"
-        android:contentDescription="@string/desc_circle_time"
+        android:foregroundGravity="fill"
+        android:alpha="1"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/view" />
-
+        app:layout_constraintTop_toBottomOf="@+id/view"/>
     <ImageView
         android:id="@+id/imageView5"
         android:layout_width="25dp"
         android:layout_height="25dp"
         android:layout_marginTop="0dp"
         android:layout_marginBottom="30dp"
+        android:foreground="@drawable/dc_voltage"
         android:alpha="1"
-        android:src="@drawable/dc_voltage"
         app:layout_constraintBottom_toBottomOf="@+id/CircleCurrent"
         app:layout_constraintEnd_toEndOf="@+id/CircleCurrent"
         app:layout_constraintHorizontal_bias="0.52"
         app:layout_constraintStart_toStartOf="@+id/CircleCurrent"
-        app:layout_constraintTop_toBottomOf="@+id/Current" />
-
+        app:layout_constraintTop_toBottomOf="@+id/Current"/>
     <ImageView
         android:id="@+id/imageView6"
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_marginTop="5dp"
         android:layout_marginBottom="20dp"
+        android:foreground="@drawable/power_10"
         android:alpha="1"
-        android:src="@drawable/power_10"
         app:layout_constraintEnd_toEndOf="@+id/CircleVoltage"
         app:layout_constraintHorizontal_bias="0.52"
         app:layout_constraintStart_toStartOf="@+id/CircleVoltage"
-        app:layout_constraintTop_toBottomOf="@+id/Voltage" />
-
+        app:layout_constraintTop_toBottomOf="@+id/Voltage"/>
     <ImageView
         android:id="@+id/imageView8"
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_marginTop="5dp"
         android:layout_marginBottom="20dp"
+        android:foreground="@drawable/time_12"
         android:alpha="1"
-        android:src="@drawable/time_12"
         app:layout_constraintEnd_toEndOf="@+id/circleTime"
         app:layout_constraintHorizontal_bias="0.52"
         app:layout_constraintStart_toStartOf="@+id/circleTime"
-        app:layout_constraintTop_toBottomOf="@+id/Time" />
-
+        app:layout_constraintTop_toBottomOf="@+id/Time"/>
     <ImageView
         android:id="@+id/imageView7"
         android:layout_width="20dp"
         android:layout_height="30dp"
         android:layout_marginTop="5dp"
         android:layout_marginBottom="20dp"
+        android:foreground="@drawable/temp"
         android:alpha="1"
-        android:src="@drawable/temp"
         app:layout_constraintEnd_toEndOf="@+id/circleTemp"
         app:layout_constraintHorizontal_bias="0.52"
         app:layout_constraintStart_toStartOf="@+id/circleTemp"
-        app:layout_constraintTop_toBottomOf="@+id/Temperature" />
-
+        app:layout_constraintTop_toBottomOf="@+id/Temperature"/>
     <Button
+        android:textColor="?android:attr/panelBackground"
         android:id="@+id/Refresh"
+        android:background="@android:color/transparent"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginTop="8dp"
-        android:background="@android:color/transparent"
         android:foreground="@drawable/refresh_icon1"
-        android:onClick="Refresh"
         android:text="@string/Refresh"
-        android:textColor="?android:attr/panelBackground"
+        android:onClick="Refresh"
         app:layout_constraintEnd_toStartOf="@+id/view"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar2" />
-
+        app:layout_constraintTop_toBottomOf="@+id/toolbar2"/>
     <ProgressBar
         android:id="@+id/progressBar"
-        style="@style/CustomProgressBarHorizontal"
         android:layout_width="150dp"
         android:layout_height="80dp"
-        android:alpha="0.5"
         android:onClick="open_Dialog_Cells"
+        android:alpha="0.5"
         app:layout_constraintBottom_toBottomOf="@+id/view"
         app:layout_constraintEnd_toEndOf="@+id/view"
         app:layout_constraintStart_toStartOf="@+id/view"
         app:layout_constraintTop_toTopOf="@+id/view"
-        app:layout_constraintVertical_bias="0.485" />
-
+        app:layout_constraintVertical_bias="0.485"
+        style="@style/CustomProgressBarHorizontal"/>
     <ProgressBar
         android:id="@+id/Batt1"
-        style="@style/CustomProgressBarHorizontal"
         android:layout_width="15dp"
         android:layout_height="20dp"
         android:alpha="0.5"
         app:layout_constraintBottom_toBottomOf="@+id/progressBar"
         app:layout_constraintStart_toEndOf="@+id/view"
-        app:layout_constraintTop_toTopOf="@+id/progressBar" />
-
-
+        app:layout_constraintTop_toTopOf="@+id/progressBar"
+        style="@style/CustomProgressBarHorizontal"/>
     <ImageButton
         android:id="@+id/Lockbut"
+        android:background="@android:color/transparent"
+        android:visibility="invisible"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:background="@android:color/transparent"
+        android:src="@drawable/lock_11"
+        android:scaleType="fitCenter"
         android:foregroundGravity="fill"
         android:hapticFeedbackEnabled="false"
         android:onClick="Lock"
-        android:scaleType="fitCenter"
-        android:src="@drawable/lock_11"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/Error"
-        app:layout_constraintEnd_toStartOf="@+id/CurrentProt"
-        app:layout_constraintStart_toEndOf="@+id/Pack"
-        app:layout_constraintTop_toBottomOf="@+id/progressBar" />
-
-    <TextView
-        android:id="@+id/Error"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:background="@drawable/red_circle_with_transparent_background_17"
-        android:gravity="center"
-        android:onClick="Inform_Warning"
-        android:text="SC"
-        android:textColor="@color/design_default_color_on_secondary"
-        app:layout_constraintBottom_toBottomOf="@+id/CircleVoltage"
-        app:layout_constraintEnd_toStartOf="@+id/circleTemp"
-        app:layout_constraintStart_toEndOf="@+id/CircleVoltage"
-        app:layout_constraintTop_toBottomOf="@+id/view" />
-
-    <TextView
-        android:id="@+id/Pack"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:background="@drawable/red_circle_with_transparent_background_17"
-        android:gravity="center"
-        android:onClick="Inform_Warning"
-        android:text="PUV"
-        android:textAlignment="center"
-        android:textColor="@color/design_default_color_on_secondary"
-        app:layout_constraintBottom_toTopOf="@+id/Error"
-        app:layout_constraintEnd_toStartOf="@+id/Error"
-        app:layout_constraintHorizontal_bias="0.558"
-        app:layout_constraintStart_toEndOf="@+id/CircleCurrent"
-        app:layout_constraintTop_toBottomOf="@+id/view" />
-
-    <TextView
-        android:id="@+id/CurrentProt"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:background="@drawable/red_circle_with_transparent_background_17"
-        android:gravity="center"
-        android:onClick="Inform_Warning"
-        android:text="CO"
-        android:textColor="@color/design_default_color_on_secondary"
-        app:layout_constraintBottom_toTopOf="@+id/Error"
-        app:layout_constraintEnd_toStartOf="@+id/circleTime"
-        app:layout_constraintStart_toEndOf="@+id/Error"
-        app:layout_constraintTop_toBottomOf="@+id/view" />
-
-    <TextView
-        android:id="@+id/TempProtect"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:background="@drawable/red_circle_with_transparent_background_17"
-        android:gravity="center"
-        android:onClick="Inform_Warning"
-        android:text="PUV"
-        android:textColor="@color/design_default_color_on_secondary"
         app:layout_constraintBottom_toTopOf="@+id/circleTime"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/Error"
-        app:layout_constraintTop_toBottomOf="@+id/progressBar" />
-
-    <!--TextView
-        android:id="@+id/Single"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:background="@drawable/red_circle_with_transparent_background_17"
+        app:layout_constraintStart_toEndOf="@+id/progressBar"
+        app:layout_constraintTop_toBottomOf="@+id/BatteryNo"/>
+    <TextView
+        android:textColor="@color/ic_launcher_background"
         android:gravity="center"
-        android:onClick="Inform_Warning"
-        android:text="SUV"
-        android:textColor="@color/design_default_color_on_secondary"
-        app:layout_constraintBottom_toTopOf="@+id/CircleCurrent"
-        app:layout_constraintEnd_toStartOf="@+id/Error"
+        android:id="@+id/Warning"
+        android:background="@android:drawable/dialog_holo_dark_frame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="  Warning Test  "
+        android:alpha="0.8"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/progressBar" -->
-
-
+        app:layout_constraintTop_toBottomOf="@+id/circleTemp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
