@@ -1,5 +1,6 @@
 package com.Andriod.ER.com;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
@@ -13,6 +14,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Build;
@@ -49,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String CHANNEL_DEFAULT_IMPORTANCE = "0xffffffff";
     public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
     public static final String EXTRAS_DEVICE_NAME = "DEVICE_NAME";
+    private static final int PERMISSION_REQUEST_CODE = 124;
     private static final int LOCATION_PERMISSION_CODE = 126;
     private static final int MY_PERMISSIONS_REQUEST_CODE = 123;
     private static final int MY_PERMISSIONS_REQUEST_CODE_Scan_Connect = 124;
@@ -175,6 +178,36 @@ public class MainActivity extends AppCompatActivity {
             if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action) && MainActivity.mConnected) {
                 MainActivity mainActivity2 = MainActivity.this;
                 mainActivity2.displayGattServices(mainActivity2.mBluetoothLeService.getSupportedGattServices());
+            }
+        }
+    };
+
+    private final BroadcastReceiver mDataAvailableReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+            if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
+                if (intent.hasExtra(BluetoothLeService.EXTRA_VOLTS)) {
+                    float voltageValue = intent.getFloatExtra(BluetoothLeService.EXTRA_VOLTS, 0.0f);
+                    runOnUiThread(() -> voltage.setText(String.valueOf(new DecimalFormat("##.#").format(voltageValue) + "V")));
+                }
+                if (intent.hasExtra(BluetoothLeService.EXTRA_PERCENTAGE)) {
+                    float percentageValue = intent.getFloatExtra(BluetoothLeService.EXTRA_PERCENTAGE, 0.0f);
+                    runOnUiThread(() -> {
+                        percent.setText(String.valueOf(new DecimalFormat("##.#").format(percentageValue) + "%"));
+                        mProgressBar.setProgress((int) percentageValue);
+                        if (percentageValue <= 30.0f) {
+                            mProgressBar.setProgressTintList(ColorStateList.valueOf(0xFFFF0000));
+                        } else if (percentageValue > 30.0f && percentageValue < 40.0f) {
+                            mProgressBar.setProgressTintList(ColorStateList.valueOf(Color.rgb(255, 165, 0)));
+                        } else if (percentageValue >= 40.0f) {
+                            mProgressBar.setProgressTintList(ColorStateList.valueOf(-16711936));
+                        }
+                    });
+                }
+                // Retrieve other data extras and update UI accordingly
+                mBluetoothLeService.DataReady = true; // You can set this here after processing data
+                WorkInterface(); // Potentially call this here to update other UI elements
             }
         }
     };
@@ -413,31 +446,44 @@ public class MainActivity extends AppCompatActivity {
 
     protected void checkPermission12() {
         Log.i(TAG, "checkPermission12");
-        if (ContextCompat.checkSelfPermission(this, "android.permission.BLUETOOTH_SCAN") == 0 && ContextCompat.checkSelfPermission(this, "android.permission.BLUETOOTH_CONNECT") == 0) {
-            return;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED &&
+                    ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
+                Log.i(TAG, "All Bluetooth permissions already granted");
+                return;
+            }
+
+            Log.i(TAG, "Bluetooth permissions NOT granted. Requesting...");
+
+            new AlertDialog.Builder(this)
+                    .setMessage("Energy Research needs permission to access the Bluetooth scanning and connectivity features to find nearby ER batteries and connect to them!")
+                    .setCancelable(false)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            ActivityCompat.requestPermissions(
+                                    MainActivity.this,
+                                    new String[] {
+                                            Manifest.permission.BLUETOOTH_SCAN,
+                                            Manifest.permission.BLUETOOTH_CONNECT
+                                    },
+                                    PERMISSION_REQUEST_CODE
+                            );
+                            dialogInterface.dismiss();
+                            MainActivity.this.busy = false;
+                        }
+                    })
+                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                            MainActivity.this.busy = false;
+                        }
+                    })
+                    .create()
+                    .show();
         }
-        Log.i(TAG, "!= PackageManager.PERMISSION_GRANTED");
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Energy Research needs permission to access the Bluetooth scanning and connectivity features to find nearby ER batteries and connect to them!");
-        builder.setCancelable(false);
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() { // from class: com.Andriod.ER.com.MainActivity.7
-            @Override // android.content.DialogInterface.OnClickListener
-            public void onClick(DialogInterface dialogInterface, int i) {
-                if (Build.VERSION.SDK_INT >= 31) {
-                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{"android.permission.BLUETOOTH_SCAN", "android.permission.BLUETOOTH_CONNECT"}, 124);
-                }
-                dialogInterface.cancel();
-                MainActivity.this.busy = false;
-            }
-        });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() { // from class: com.Andriod.ER.com.MainActivity.8
-            @Override // android.content.DialogInterface.OnClickListener
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.cancel();
-                MainActivity.this.busy = false;
-            }
-        });
-        builder.create().show();
     }
 
     protected void checkPermission() {
@@ -611,12 +657,19 @@ public class MainActivity extends AppCompatActivity {
             boolean connect = bluetoothLeService.connect(this.mDeviceAddress);
             Log.i(TAG, "Connect request result=" + connect);
         }
+        IntentFilter dataAvailableFilter = new IntentFilter(BluetoothLeService.ACTION_DATA_AVAILABLE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(mDataAvailableReceiver, dataAvailableFilter, null, null, Context.RECEIVER_NOT_EXPORTED);
+        } else {
+            registerReceiver(mDataAvailableReceiver, dataAvailableFilter); // For older versions
+        }
     }
 
     @Override // androidx.fragment.app.FragmentActivity, android.app.Activity
     protected void onPause() {
         super.onPause();
         unregisterReceiver(this.mGattUpdateReceiver);
+        unregisterReceiver(mDataAvailableReceiver);
     }
 
     @Override // androidx.appcompat.app.AppCompatActivity, androidx.fragment.app.FragmentActivity, android.app.Activity
