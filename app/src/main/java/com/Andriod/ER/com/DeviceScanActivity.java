@@ -158,7 +158,8 @@ public class DeviceScanActivity extends ListActivity {
                         this,
                         new String[]{
                                 Manifest.permission.BLUETOOTH_CONNECT,
-                                Manifest.permission.BLUETOOTH_SCAN
+                                Manifest.permission.BLUETOOTH_SCAN,
+                                Manifest.permission.ACCESS_FINE_LOCATION
                         },
                         1001 // Request code
                 );
@@ -188,7 +189,9 @@ public class DeviceScanActivity extends ListActivity {
                         if (ContextCompat.checkSelfPermission(DeviceScanActivity.this, Manifest.permission.BLUETOOTH_SCAN)
                                 != PackageManager.PERMISSION_GRANTED) {
                             ActivityCompat.requestPermissions(DeviceScanActivity.this,
-                                    new String[]{Manifest.permission.BLUETOOTH_CONNECT,Manifest.permission.BLUETOOTH_SCAN},
+                                    new String[]{ Manifest.permission.BLUETOOTH_CONNECT,
+                                            Manifest.permission.BLUETOOTH_SCAN,
+                                            Manifest.permission.ACCESS_FINE_LOCATION},
                                     1001);
                             return; // Wait for permission result
                         }
@@ -211,7 +214,10 @@ public class DeviceScanActivity extends ListActivity {
                         if (ContextCompat.checkSelfPermission(DeviceScanActivity.this, Manifest.permission.BLUETOOTH_SCAN)
                                 != PackageManager.PERMISSION_GRANTED) {
                             ActivityCompat.requestPermissions(DeviceScanActivity.this,
-                                    new String[]{Manifest.permission.BLUETOOTH_CONNECT,Manifest.permission.BLUETOOTH_SCAN},
+                                    new String[]{
+                                            Manifest.permission.BLUETOOTH_CONNECT,
+                                            Manifest.permission.BLUETOOTH_SCAN,
+                                            Manifest.permission.ACCESS_FINE_LOCATION},
                                     1001);
                             return; // Wait for permission result
                         }
@@ -237,7 +243,10 @@ public class DeviceScanActivity extends ListActivity {
                 if (ContextCompat.checkSelfPermission(DeviceScanActivity.this, Manifest.permission.BLUETOOTH_SCAN)
                         != PackageManager.PERMISSION_GRANTED) {
                     ActivityCompat.requestPermissions(DeviceScanActivity.this,
-                            new String[]{Manifest.permission.BLUETOOTH_CONNECT,Manifest.permission.BLUETOOTH_SCAN},
+                            new String[]{
+                                    Manifest.permission.BLUETOOTH_CONNECT,
+                                    Manifest.permission.BLUETOOTH_SCAN,
+                                    Manifest.permission.ACCESS_FINE_LOCATION },
                             1001);
                     return; // Wait for permission result
                 }
@@ -260,7 +269,10 @@ public class DeviceScanActivity extends ListActivity {
                 if (ContextCompat.checkSelfPermission(DeviceScanActivity.this, Manifest.permission.BLUETOOTH_SCAN)
                         != PackageManager.PERMISSION_GRANTED) {
                     ActivityCompat.requestPermissions(DeviceScanActivity.this,
-                            new String[]{Manifest.permission.BLUETOOTH_CONNECT,Manifest.permission.BLUETOOTH_SCAN},
+                            new String[]{
+                                    Manifest.permission.BLUETOOTH_CONNECT,
+                                    Manifest.permission.BLUETOOTH_SCAN,
+                                    Manifest.permission.ACCESS_FINE_LOCATION},
                             1001);
                     return; // Wait for permission result
                 }
