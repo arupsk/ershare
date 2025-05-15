@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
@@ -20,6 +21,7 @@ import android.util.Log;
 import androidx.core.content.ContextCompat;
 
 import java.util.List;
+import java.util.UUID;
 
 /* loaded from: classes.dex */
 public class BluetoothLeService extends Service {
@@ -28,6 +30,10 @@ public class BluetoothLeService extends Service {
     public static final String ACTION_GATT_DISCONNECTED = "com.example.bluetooth.le.ACTION_GATT_DISCONNECTED";
     public static final String ACTION_GATT_SERVICES_DISCOVERED = "com.example.bluetooth.le.ACTION_GATT_SERVICES_DISCOVERED";
     public static final String EXTRA_DATA = "com.example.bluetooth.le.EXTRA_DATA";
+
+    public UUID YOUR_BATTERY_SERVICE_UUID  = UUID.fromString("0000ff00-0000-1000-8000-00805f9b34fb");
+
+    public UUID YOUR_BATTERY_LEVEL_CHARACTERISTIC_UUID   = UUID.fromString("0000ff02-0000-1000-8000-00805f9b34fb");
     private static final int STATE_CONNECTED = 2;
     private static final int STATE_CONNECTING = 1;
     private static final int STATE_DISCONNECTED = 0;
@@ -71,6 +77,15 @@ public class BluetoothLeService extends Service {
     public float NomCap_Par = 0.0f;
     public int Mosfets = 0;
     public byte Reg_Design_capacity = 16;
+    public static final String EXTRA_VOLTS = "com.example.bluetooth.le.EXTRA_VOLTS";
+    public static final String EXTRA_PERCENTAGE = "com.example.bluetooth.le.EXTRA_PERCENTAGE";
+
+    public static final String EXTRA_RAMPS = "com.example.bluetooth.le.EXTRA_RAMPS";
+
+    public static final String EXTRA_TIME = "com.example.bluetooth.le.EXTRA_TIME";
+
+    public static final String EXTRA_TEMP1 = "com.example.bluetooth.le.EXTRA_TEMP1";
+
     public float Design_capacity = 0.0f;
     public byte Reg_Circulation_capacity = 17;
     public float Circulation_capacity = 0.0f;
@@ -134,14 +149,57 @@ public class BluetoothLeService extends Service {
         }
 
         @Override // android.bluetooth.BluetoothGattCallback
-        public void onServicesDiscovered(BluetoothGatt bluetoothGatt, int i) {
-            if (i == 0) {
-                BluetoothLeService.this.broadcastUpdate(BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED);
-                return;
+        public void onServicesDiscovered(BluetoothGatt bluetoothGatt, int status) {
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+                broadcastUpdate(ACTION_GATT_SERVICES_DISCOVERED);
+
+                // 1. Get the service and characteristic:
+                BluetoothGattService batteryService = bluetoothGatt.getService(YOUR_BATTERY_SERVICE_UUID); // Replace with your actual UUID
+                if (batteryService != null) {
+                    BluetoothGattCharacteristic batteryLevelCharacteristic = batteryService.getCharacteristic(YOUR_BATTERY_LEVEL_CHARACTERISTIC_UUID); // Replace
+                    if (batteryLevelCharacteristic != null) {
+                        // 2. Read the characteristic:
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+                                ContextCompat.checkSelfPermission(BluetoothLeService.this, Manifest.permission.BLUETOOTH_CONNECT)
+                                        != PackageManager.PERMISSION_GRANTED) {
+                            Log.w(TAG, "Missing BLUETOOTH_CONNECT permission; cannot read characteristic.");
+                            return;
+                        }
+                        mBluetoothGatt.readCharacteristic(batteryLevelCharacteristic);
+
+                        // 3.  Enable notifications if you want to receive automatic updates:
+                        mBluetoothGatt.setCharacteristicNotification(batteryLevelCharacteristic, true);
+
+                        // *** ADD THIS DESCRIPTOR CODE ***
+                        BluetoothGattDescriptor descriptor = batteryLevelCharacteristic.getDescriptor(
+                                UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")); // Standard descriptor UUID
+                        if (descriptor != null) {
+                            descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+                                    ContextCompat.checkSelfPermission(BluetoothLeService.this, Manifest.permission.BLUETOOTH_CONNECT)
+                                            != PackageManager.PERMISSION_GRANTED) {
+                                Log.w(TAG, "Missing BLUETOOTH_CONNECT permission; cannot write descriptor.");
+                                return;
+                            }
+                            mBluetoothGatt.writeDescriptor(descriptor);
+                        } else {
+                            Log.w(TAG, "CCCD descriptor not found!");
+                        }
+                        // *** END DESCRIPTOR CODE ***
+
+                    } else {
+                        Log.w(TAG, "Battery level characteristic not found");
+                    }
+                } else {
+                    Log.w(TAG, "Battery service not found");
+                }
+            } else {
+                Log.w(TAG, "onServicesDiscovered received: " + status); // Use status, not i
+                Log.i(TAG, "gatt:" + bluetoothGatt); // Log the gatt object
             }
-            Log.w(BluetoothLeService.TAG, "onServicesDiscovered received: " + i);
-            Log.i(BluetoothLeService.TAG, "uuid:" + bluetoothGatt);
         }
+
+
 
         @Override // android.bluetooth.BluetoothGattCallback
         public void onCharacteristicRead(BluetoothGatt bluetoothGatt, BluetoothGattCharacteristic bluetoothGattCharacteristic, int i) {
@@ -251,8 +309,18 @@ public class BluetoothLeService extends Service {
             for (byte b : value) {
                 sb.append(String.format("%02X ", Byte.valueOf(b)));
             }
-            intent.putExtra(EXTRA_DATA, String.format("%s", new String(value)));
-            ReadingData(value);
+            Log.d(TAG, "Raw data received: " + sb.toString());
+            ReadingData(value); // This method updates your class members (volts, percentage, etc.)
+
+            // Now, put the processed data as extras in the intent
+            if (ACTION_DATA_AVAILABLE.equals(str) && ReadComand_ready) {
+                intent.putExtra(EXTRA_VOLTS, volts);
+                intent.putExtra(EXTRA_PERCENTAGE, percentage);
+                intent.putExtra(EXTRA_RAMPS, Ramps);
+                intent.putExtra(EXTRA_TIME, time);
+                intent.putExtra(EXTRA_TEMP1, temp1);
+                // Add other relevant data as extras
+            }
         }
         sendBroadcast(intent);
     }
