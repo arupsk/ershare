@@ -521,6 +521,8 @@ public class BluetoothLeService extends Service {
             return false;
         }
         String str2 = this.mBluetoothDeviceAddress;
+        Log.d(TAG, "new Address."+str);
+        Log.d(TAG, "new Address2."+str);
         if (str2 != null && str.equals(str2) && this.mBluetoothGatt != null) {
             Log.d(TAG, "Trying to use an existing mBluetoothGatt for connection.");
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
@@ -532,6 +534,7 @@ public class BluetoothLeService extends Service {
                 return false;
             }
             if (this.mBluetoothGatt.connect()) {
+                Log.w(TAG, "Connection happens.");
                 this.mConnectionState = 1;
                 return true;
             }
@@ -548,6 +551,7 @@ public class BluetoothLeService extends Service {
         this.mBluetoothGatt = remoteDevice.connectGatt(this, false, this.mGattCallback);
         Log.d(TAG, "Trying to create a new connection.");
         this.mBluetoothDeviceAddress = str;
+        Log.d(TAG, "new Address3."+remoteDevice);
         this.mConnectionState = 1;
         return true;
     }
