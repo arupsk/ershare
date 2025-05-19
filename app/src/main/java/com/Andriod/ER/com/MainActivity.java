@@ -647,8 +647,10 @@ public class MainActivity extends AppCompatActivity {
         Log.i(TAG, " Back to MainActivity..");
         Log.i(TAG, " Connection..");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            Log.d(TAG, "Registering mGattUpdateReceiver (TIRAMISU+)");
             registerReceiver(this.mGattUpdateReceiver, makeGattUpdateIntentFilter(), null,null,Context.RECEIVER_NOT_EXPORTED);
         } else {
+            Log.d(TAG, "Registering mGattUpdateReceiver (Pre-TIRAMISU)");
             registerReceiver(this.mGattUpdateReceiver, makeGattUpdateIntentFilter());
         }
 
@@ -659,8 +661,10 @@ public class MainActivity extends AppCompatActivity {
         }
         IntentFilter dataAvailableFilter = new IntentFilter(BluetoothLeService.ACTION_DATA_AVAILABLE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            Log.d(TAG, "Registering mDataAvailableReceiver (TIRAMISU+)");
             registerReceiver(mDataAvailableReceiver, dataAvailableFilter, null, null, Context.RECEIVER_NOT_EXPORTED);
         } else {
+            Log.d(TAG, "Registering mDataAvailableReceiver (Pre-TIRAMISU)");
             registerReceiver(mDataAvailableReceiver, dataAvailableFilter); // For older versions
         }
     }
