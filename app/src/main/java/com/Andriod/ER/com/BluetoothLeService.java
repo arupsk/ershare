@@ -20,6 +20,7 @@ import android.util.Log;
 
 import androidx.core.content.ContextCompat;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,7 +34,7 @@ public class BluetoothLeService extends Service {
 
     public UUID YOUR_BATTERY_SERVICE_UUID  = UUID.fromString("0000ff00-0000-1000-8000-00805f9b34fb");
 
-    public UUID YOUR_BATTERY_LEVEL_CHARACTERISTIC_UUID   = UUID.fromString("0000ff02-0000-1000-8000-00805f9b34fb");
+    public UUID YOUR_BATTERY_LEVEL_CHARACTERISTIC_UUID   = UUID.fromString("0000ff01-0000-1000-8000-00805f9b34fb");
     private static final int STATE_CONNECTED = 2;
     private static final int STATE_CONNECTING = 1;
     private static final int STATE_DISCONNECTED = 0;
@@ -153,39 +154,29 @@ public class BluetoothLeService extends Service {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 broadcastUpdate(ACTION_GATT_SERVICES_DISCOVERED);
 
-                // 1. Get the service and characteristic:
-                BluetoothGattService batteryService = bluetoothGatt.getService(YOUR_BATTERY_SERVICE_UUID); // Replace with your actual UUID
+                BluetoothGattService batteryService = bluetoothGatt.getService(YOUR_BATTERY_SERVICE_UUID);
                 if (batteryService != null) {
-                    BluetoothGattCharacteristic batteryLevelCharacteristic = batteryService.getCharacteristic(YOUR_BATTERY_LEVEL_CHARACTERISTIC_UUID); // Replace
+                    BluetoothGattCharacteristic batteryLevelCharacteristic = batteryService.getCharacteristic(YOUR_BATTERY_LEVEL_CHARACTERISTIC_UUID);
                     if (batteryLevelCharacteristic != null) {
-                        // 2. Read the characteristic:
+
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
                                 ContextCompat.checkSelfPermission(BluetoothLeService.this, Manifest.permission.BLUETOOTH_CONNECT)
                                         != PackageManager.PERMISSION_GRANTED) {
-                            Log.w(TAG, "Missing BLUETOOTH_CONNECT permission; cannot read characteristic.");
+                            Log.w(TAG, "Missing BLUETOOTH_CONNECT permission; cannot enable notifications.");
                             return;
                         }
-                        mBluetoothGatt.readCharacteristic(batteryLevelCharacteristic);
 
-                        // 3.  Enable notifications if you want to receive automatic updates:
                         mBluetoothGatt.setCharacteristicNotification(batteryLevelCharacteristic, true);
 
-                        // *** ADD THIS DESCRIPTOR CODE ***
                         BluetoothGattDescriptor descriptor = batteryLevelCharacteristic.getDescriptor(
-                                UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")); // Standard descriptor UUID
+                                UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")); // CCCD UUID
+
                         if (descriptor != null) {
                             descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
-                                    ContextCompat.checkSelfPermission(BluetoothLeService.this, Manifest.permission.BLUETOOTH_CONNECT)
-                                            != PackageManager.PERMISSION_GRANTED) {
-                                Log.w(TAG, "Missing BLUETOOTH_CONNECT permission; cannot write descriptor.");
-                                return;
-                            }
-                            mBluetoothGatt.writeDescriptor(descriptor);
+                            mBluetoothGatt.writeDescriptor(descriptor); // Wait for callback
                         } else {
                             Log.w(TAG, "CCCD descriptor not found!");
                         }
-                        // *** END DESCRIPTOR CODE ***
 
                     } else {
                         Log.w(TAG, "Battery level characteristic not found");
@@ -194,18 +185,40 @@ public class BluetoothLeService extends Service {
                     Log.w(TAG, "Battery service not found");
                 }
             } else {
-                Log.w(TAG, "onServicesDiscovered received: " + status); // Use status, not i
-                Log.i(TAG, "gatt:" + bluetoothGatt); // Log the gatt object
+                Log.w(TAG, "onServicesDiscovered received: " + status);
+                Log.i(TAG, "gatt: " + bluetoothGatt);
             }
         }
 
+
+        @Override
+        public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+                Log.i(TAG, "Descriptor write success, now reading characteristic");
+
+                // Proceed with reading the characteristic (or just wait for notifications if that's enough)
+                BluetoothGattCharacteristic characteristic = descriptor.getCharacteristic();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+                        ContextCompat.checkSelfPermission(BluetoothLeService.this, Manifest.permission.BLUETOOTH_CONNECT)
+                                != PackageManager.PERMISSION_GRANTED) {
+                    Log.w(TAG, "Missing BLUETOOTH_CONNECT permission; cannot enable notifications.");
+                    return;
+                }
+                mBluetoothGatt.readCharacteristic(characteristic);
+            } else {
+                Log.w(TAG, "Descriptor write failed with status: " + status);
+            }
+        }
 
 
         @Override // android.bluetooth.BluetoothGattCallback
         public void onCharacteristicRead(BluetoothGatt bluetoothGatt, BluetoothGattCharacteristic bluetoothGattCharacteristic, int i) {
             if (i == 0) {
                 BluetoothLeService.this.broadcastUpdate(BluetoothLeService.ACTION_DATA_AVAILABLE, bluetoothGattCharacteristic);
-                Log.i(BluetoothLeService.TAG, "Charuuid:" + bluetoothGattCharacteristic);
+                byte[] value = bluetoothGattCharacteristic.getValue();
+                StringBuilder hex = new StringBuilder();
+                for (byte b : value) hex.append(String.format("%02X ", b));
+                Log.i(BluetoothLeService.TAG, "Char Data: " + hex.toString());
             }
         }
 
@@ -362,38 +375,46 @@ public class BluetoothLeService extends Service {
     }
 
     public void procesdata(byte[] bArr) {
-        if ((bArr[1] & 255) == 3 && bArr.length > 30) {
-            Log.i(TAG, "DataIn[1] & 0xFF) == 0x03");
-            this.volts = (((bArr[4] & 255) << 8) | (bArr[5] & 255)) / 100.0f;
-            float f = ((bArr[6] & 255) << 8) | (bArr[7] & 255);
-            this.amps = f;
-            if (f > 25000.0f) {
-                this.Ramps = (f - 65536.0f) / 100.0f;
-            } else if (f < 25000.0f) {
-                this.Ramps = f / 100.0f;
-            }
-            float f2 = (((bArr[8] & 255) << 8) | (bArr[9] & 255)) / 100.0f;
+        if (bArr == null || bArr.length < 2) {
+            Log.w(TAG, "Invalid or empty data");
+            return;
+        }
+
+        int packetType = bArr[1] & 0xFF;
+
+        // === Main data packet (volts, amps, temps, etc.) ===
+        if (packetType == 0x03 && bArr.length > 30) {
+            Log.i(TAG, "Processing standard data packet (type 0x03)");
+
+            this.volts = (((bArr[4] & 0xFF) << 8) | (bArr[5] & 0xFF)) / 100.0f;
+
+            float rawAmps = ((bArr[6] & 0xFF) << 8) | (bArr[7] & 0xFF);
+            this.amps = rawAmps;
+            this.Ramps = rawAmps > 25000.0f ? (rawAmps - 65536.0f) / 100.0f : rawAmps / 100.0f;
+
+            float f2 = (((bArr[8] & 0xFF) << 8) | (bArr[9] & 0xFF)) / 100.0f;
             this.RemainCap = f2;
-            float f3 = ((bArr[11] & 255) | ((bArr[10] & 255) << 8)) / 100.0f;
+
+            float f3 = ((bArr[11] & 0xFF) | ((bArr[10] & 0xFF) << 8)) / 100.0f;
             this.NomCap = f3;
+
             this.percentage = bArr[23];
+
             float f4 = this.Ramps;
-            if (f4 != 0.0d) {
-                if (f4 < 0.0d) {
-                    this.time = f2 / Math.abs(f4);
-                } else if (f4 > 0.0d) {
-                    this.time = (f3 - f2) / Math.abs(f4);
-                }
-            } else if (this.amps == 0.0d) {
+            if (f4 != 0.0f) {
+                this.time = f4 < 0.0f ? f2 / Math.abs(f4) : (f3 - f2) / Math.abs(f4);
+            } else if (this.amps == 0.0f) {
                 this.time = 0.0f;
             }
-            this.temp1 = ((((bArr[27] & 255) << 8) | (bArr[28] & 255)) - 2731.0f) / 10.0f;
-            if ((bArr[26] & 255) == 2) {
-                this.temp2 = ((((bArr[29] & 255) << 8) | (bArr[30] & 255)) - 2731.0f) / 10.0f;
-            } else if ((bArr[26] & 255) == 1) {
+
+            this.temp1 = ((((bArr[27] & 0xFF) << 8) | (bArr[28] & 0xFF)) - 2731.0f) / 10.0f;
+            if ((bArr[26] & 0xFF) == 2) {
+                this.temp2 = ((((bArr[29] & 0xFF) << 8) | (bArr[30] & 0xFF)) - 2731.0f) / 10.0f;
+            } else if ((bArr[26] & 0xFF) == 1) {
                 this.temp2 = 0.0f;
             }
-            int i = ((bArr[20] & 255) << 8) | (bArr[21] & 255);
+
+            int i = ((bArr[20] & 0xFF) << 8) | (bArr[21] & 0xFF);
             this.lockData = i >> 12;
             this.SOV = getBit(i, 0);
             this.SUV = getBit(i, 1);
@@ -403,60 +424,84 @@ public class BluetoothLeService extends Service {
             this.CUT = getBit(i, 5);
             this.DOT = getBit(i, 6);
             this.DUT = getBit(i, 7);
-            this.COC = getBit(i, 7);
+            this.COC = getBit(i, 8);
             this.DOC = getBit(i, 9);
             this.SC = getBit(i, 10);
             this.IC_Error = getBit(i, 11);
+
             this.Mosfets = bArr[24];
             this.DataReady = true;
             this.ReadComand_ready = true;
             return;
         }
-        if ((bArr[1] & 255) == 4) {
-            int i2 = (bArr[3] & 255) / 2;
+
+        // === Cell voltages ===
+        if (packetType == 0x04) {
+            int i2 = (bArr[3] & 0xFF) / 2;
             this.AantalCellen = i2;
             process_Cells(bArr, i2);
             this.cellenDataReady = true;
             return;
         }
-        if ((bArr[1] & 255) == 46) {
-            this.Temp_Sensors_Data = bArr[5] & 255;
+
+        // === Temperature sensors ===
+        if (packetType == 0x2E) {
+            this.Temp_Sensors_Data = bArr[5] & 0xFF;
             return;
         }
-        if ((bArr[1] & 255) == 16) {
-            this.NomCap_Par = ((bArr[5] & 255) | ((bArr[4] & 255) << 8)) / 100.0f;
+
+        // === Nominal capacity param ===
+        if (packetType == 0x10) {
+            this.NomCap_Par = ((bArr[5] & 0xFF) | ((bArr[4] & 0xFF) << 8)) / 100.0f;
             return;
         }
-        if ((bArr[1] & 255) == this.Reg_Cell_Under_voltage_releas_par) {
-            if ((bArr[2] & 255) == 0 && (bArr[2] & 255) == 80) {
-                return;
+
+        // === Cell under voltage release parameter ===
+        if (packetType == this.Reg_Cell_Under_voltage_releas_par) {
+            if (!((bArr[2] & 0xFF) == 0 && (bArr[2] & 0xFF) == 80)) {
+                this.Cell_Under_voltage_releas_par = ((bArr[5] & 0xFF) | ((bArr[4] & 0xFF) << 8)) / 1000.0f;
             }
-            this.Cell_Under_voltage_releas_par = ((bArr[5] & 255) | ((bArr[4] & 255) << 8)) / 1000.0f;
             return;
         }
-        if ((bArr[1] & 255) == this.Reg_Cell_Under_voltage_par) {
-            if ((bArr[2] & 255) == 0 && (bArr[2] & 255) == 80) {
-                return;
+
+        // === Cell under voltage parameter ===
+        if (packetType == this.Reg_Cell_Under_voltage_par) {
+            if (!((bArr[2] & 0xFF) == 0 && (bArr[2] & 0xFF) == 80)) {
+                this.Cell_Under_voltage_par = ((bArr[5] & 0xFF) | ((bArr[4] & 0xFF) << 8)) / 1000.0f;
             }
-            this.Cell_Under_voltage_par = ((bArr[5] & 255) | ((bArr[4] & 255) << 8)) / 1000.0f;
             return;
         }
-        if ((bArr[1] & 255) == this.Reg_Pack_Under_voltage_releas_par) {
-            if ((bArr[2] & 255) == 0 && (bArr[2] & 255) == 80) {
-                return;
+
+        // === Pack under voltage release parameter ===
+        if (packetType == this.Reg_Pack_Under_voltage_releas_par) {
+            if (!((bArr[2] & 0xFF) == 0 && (bArr[2] & 0xFF) == 80)) {
+                this.Pack_Under_voltage_releas_par = ((bArr[5] & 0xFF) | ((bArr[4] & 0xFF) << 8)) / 100.0f;
             }
-            this.Pack_Under_voltage_releas_par = ((bArr[5] & 255) | ((bArr[4] & 255) << 8)) / 100.0f;
             return;
         }
-        if ((bArr[1] & 255) == this.Reg_Pack_Under_voltage_par) {
-            if ((bArr[2] & 255) == 0 && (bArr[2] & 255) == 80) {
-                return;
+
+        // === Pack under voltage parameter ===
+        if (packetType == this.Reg_Pack_Under_voltage_par) {
+            if (!((bArr[2] & 0xFF) == 0 && (bArr[2] & 0xFF) == 80)) {
+                this.Pack_Under_voltage_par = ((bArr[5] & 0xFF) | ((bArr[4] & 0xFF) << 8)) / 100.0f;
             }
-            this.Pack_Under_voltage_par = ((bArr[5] & 255) | ((bArr[4] & 255) << 8)) / 100.0f;
             return;
         }
-        Log.i(TAG, "Unexpected Data:" + bArr);
+
+        // === FF AA ... packets (like device ID / serial number) ===
+        if ((bArr[0] & 0xFF) == 0xFF && packetType == 0xAA) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 4; i < bArr.length - 2; i++) {
+                sb.append((char) bArr[i]);
+            }
+            Log.i(TAG, "Serial Number / Device ID: " + sb.toString().trim());
+            return;
+        }
+
+        // === Unknown packet fallback ===
+        Log.i(TAG, "Unexpected Data: " + Arrays.toString(bArr));
     }
+
 
     public void process_Cells(byte[] bArr, int i) {
         if (i >= 4) {
